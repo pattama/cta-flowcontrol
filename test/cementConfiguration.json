@@ -2,7 +2,7 @@
   "bricks": [
     {
       "name": "mybrick1",
-      "module": "Brick",
+      "module": "cta-brick",
       "properties": {},
       "links": [
         {
@@ -12,7 +12,7 @@
     },
     {
       "name": "mybrick2",
-      "module": "Brick",
+      "module": "cta-brick",
       "properties": {},
       "links": [
         {
@@ -22,7 +22,7 @@
     },
     {
       "name": "mybrick3",
-      "module": "Brick",
+      "module": "cta-brick",
       "properties": {}
     }
   ]
