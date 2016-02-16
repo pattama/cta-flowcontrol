@@ -1,0 +1,1 @@
+# Inversion of Control helpers for Compass Test Automation

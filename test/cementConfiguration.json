@@ -1,0 +1,29 @@
+{
+  "bricks": [
+    {
+      "name": "mybrick1",
+      "module": "Brick",
+      "properties": {},
+      "links": [
+        {
+          "name": "mybrick2"
+        }
+      ]
+    },
+    {
+      "name": "mybrick2",
+      "module": "Brick",
+      "properties": {},
+      "links": [
+        {
+          "name": "mybrick3"
+        }
+      ]
+    },
+    {
+      "name": "mybrick3",
+      "module": "Brick",
+      "properties": {}
+    }
+  ]
+}
