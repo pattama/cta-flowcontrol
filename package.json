@@ -1,7 +1,7 @@
 {
-  "name": "cta-ioc",
+  "name": "cta-flowcontrol",
   "version": "1.0.0",
-  "description": "Inversion of Control helpers for Compass Test Automation",
+  "description": "Flow Control helpers for Compass Test Automation",
   "main": "lib/index.js",
   "contributors": [
     "Song An Bui <songan.bui@thomsonreuters.com>"
