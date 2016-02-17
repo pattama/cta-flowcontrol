@@ -6,12 +6,14 @@ const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 chai.use(chaiAsPromised);
 const expect = chai.expect;
+const sinon = require('sinon');
+require('sinon-as-promised');
 
 const Cement = require('../lib/cement');
 const CementHelper = require('../lib/cementHelper');
 const configuration = require('./cementConfiguration.json');
-const sinon = require('sinon');
-require('sinon-as-promised');
+
+const cement = new Cement(configuration);
 
 describe('Cement - instantiate', function() {
   context('when incorrect bricks Array', function() {
@@ -26,29 +28,52 @@ describe('Cement - instantiate', function() {
 
   context('when valid', function() {
     it('should return a new Cement', function(done) {
-      const cement = new Cement(configuration);
       expect(cement).to.be.an.instanceof(Cement);
       expect(cement).to.have.property('bricks').and.to.be.a('Map');
-      expect(cement).to.have.property('Modules').and.to.be.a('Map');
       configuration.bricks.forEach(function(brick) {
-        expect(cement.Modules.has(brick.module)).to.be.equal(true);
         expect(cement.bricks.has(brick.name)).to.be.equal(true);
         expect(cement.bricks.get(brick.name)).to.have.property('configuration');
         expect(cement.bricks.get(brick.name).configuration).to.be.deep.equal(brick);
         expect(cement.bricks.get(brick.name)).to.have.property('cementHelper').and.to.be.an.instanceof(CementHelper);
-        expect(cement.bricks.get(brick.name)).to.have.property('instance').and.to.be.an.instanceof(cement.Modules.get(brick.module));
+        expect(cement.bricks.get(brick.name)).to.have.property('instance').and.to.be.an.instanceof(require(brick.module));
       });
       done();
     });
   });
 
   describe('Cement - send Context', function() {
-    it('should call send Context to linked Bricks', function(done) {
-      const cement = new Cement(configuration);
-      const brick = cement.bricks.get('mybrick1');
+    const brick = cement.bricks.get('mybrick1');
+    const spyCementHelper = sinon.spy(brick.cementHelper, 'send');
+    const spyCement = sinon.spy(cement, 'send');
+    const spyLinks = [];
+    if (brick.configuration.links && Array.isArray(brick.configuration.links)) {
+      brick.configuration.links.forEach(function(link) {
+        spyLinks.push(sinon.spy(cement.bricks.get(link.name).instance, 'onData'));
+      });
+    }
+
+    before(function(done) {
       brick.cementHelper.createContext({'payload': 'start 1'}).send();
-      const spy = sinon.spy(cement, 'send');
-      //expect(spy.called).to.be.equal(true);
+      setInterval(done, 2000);
+    });
+
+    it('should call send() and all linked Bricks onData()', function(done) {
+      expect(spyCementHelper.calledOnce).to.be.equal(true);
+      expect(spyCement.calledOnce).to.be.equal(true);
+      spyLinks.forEach(function(spyLink) {
+        expect(spyLink.calledOnce).to.be.equal(true);
+      });
+      done();
+    });
+
+    after(function(done) {
+      brick.cementHelper.send.restore();
+      cement.send.restore();
+      if (brick.configuration.links && Array.isArray(brick.configuration.links)) {
+        brick.configuration.links.forEach(function(link) {
+          cement.bricks.get(link.name).instance.onData.restore();
+        });
+      }
       done();
     });
   });
