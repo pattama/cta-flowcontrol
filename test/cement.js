@@ -6,6 +6,8 @@ const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 chai.use(chaiAsPromised);
 const expect = chai.expect;
+const mockrequire = require('mock-require');
+const proxyquire = require('proxyquire');
 const sinon = require('sinon');
 require('sinon-as-promised');
 
@@ -16,13 +18,203 @@ const configuration = require('./cement-configuration.json');
 const cement = new Cement(configuration);
 
 describe('Cement - instantiate', function() {
-  context('when incorrect bricks Array', function() {
+  context('when bricks is not an Array', function() {
     it('should throw an error', function() {
       return expect(function() {
         return new Cement({
           bricks: '',
         });
-      }).to.throw(TypeError, 'incorrect bricks Array');
+      }).to.throw(TypeError, 'bricks type is not Array');
+    });
+  });
+
+  context('when missing/incorrect name string property in a brick', function() {
+    it('should throw an error', function() {
+      return expect(function() {
+        return new Cement({
+          bricks: [
+            {
+              name: {},
+            },
+          ],
+        });
+      }).to.throw(Error, `missing/incorrect 'name' string property in bricks[0]`);
+    });
+  });
+
+  context('when missing/incorrect module string property in a brick', function() {
+    it('should throw an error', function() {
+      return expect(function() {
+        return new Cement({
+          bricks: [
+            {
+              name: 'mybrick1',
+              module: {},
+            },
+          ],
+        });
+      }).to.throw(Error, `missing/incorrect 'module' string property in bricks[0]`);
+    });
+  });
+
+  context('when failing to instantiate cementhelper in a brick', function() {
+    let StubCement;
+    const stubError = new Error('CementHelper stubbed');
+    before(function() {
+      mockrequire('../lib/cement-helper', function() {
+        throw stubError;
+      });
+      const StubCementHelper = require('../lib/cement-helper');
+      StubCement = proxyquire('../lib/cement', {
+        CementHelper: StubCementHelper,
+      });
+    });
+
+    after(function() {
+      mockrequire.stop('../lib/cement-helper');
+    });
+
+    it('should throw an error', function() {
+      return expect(function() {
+        return new StubCement({
+          bricks: [
+            {
+              name: 'mybrick1',
+              module: 'cta-brick',
+            },
+          ],
+        });
+      }).to.throw(Error, `failed to instantiate new cementHelper in bricks[0]: ${stubError}`);
+    });
+  });
+
+  context('when failing to load module in a brick', function() {
+    it('should throw an error', function() {
+      return expect(function() {
+        return new Cement({
+          bricks: [
+            {
+              name: 'mybrick1',
+              module: 'foobar',
+            },
+          ],
+        });
+      }).to.throw(Error, /failed to load module 'foobar' in bricks/);
+    });
+  });
+
+  context('when failing to instantiate module in a brick', function() {
+    const stubError = new Error('Brick stubbed');
+    before(function() {
+      mockrequire('stub-brick', function() {
+        throw stubError;
+      });
+    });
+
+    after(function() {
+      mockrequire.stop('stub-brick');
+    });
+
+    it('should throw an error', function() {
+      return expect(function() {
+        return new Cement({
+          bricks: [
+            {
+              name: 'mybrick1',
+              module: 'stub-brick',
+            },
+          ],
+        });
+      }).to.throw(Error, `failed to instantiate new 'stub-brick' in bricks[0]: ${stubError}`);
+    });
+  });
+
+  context('when not unique name in brick', function() {
+    it('should throw an error', function() {
+      return expect(function() {
+        return new Cement({
+          bricks: [
+            {
+              name: 'foobar',
+              module: 'cta-brick',
+              properties: {},
+              links: [],
+            },
+            {
+              name: 'foobar',
+              module: 'cta-brick',
+              properties: {},
+              links: [],
+            },
+          ],
+        });
+      }).to.throw(Error, `bricks[1] name 'foobar' is not unique`);
+    });
+  });
+
+  context('when missing/incorrect links string property in a link', function() {
+    it('should throw an error', function() {
+      return expect(function() {
+        return new Cement({
+          bricks: [
+            {
+              name: 'mybrick1',
+              module: 'cta-brick',
+              properties: {},
+              links: {
+                name: {},
+              },
+            },
+          ],
+        });
+      }).to.throw(Error, `missing/incorrect 'links' Array property in bricks[0]`);
+    });
+  });
+
+  context('when missing/incorrect name Array property in a brick', function() {
+    it('should throw an error', function() {
+      return expect(function() {
+        return new Cement({
+          bricks: [
+            {
+              name: 'mybrick1',
+              module: 'cta-brick',
+              properties: {},
+              links: '',
+            },
+          ],
+        });
+      }).to.throw(Error, `missing/incorrect 'links' Array property in bricks[0]`);
+    });
+  });
+
+  context('when a brick has an uninstantiated link', function() {
+    it('should throw an error', function() {
+      return expect(function() {
+        return new Cement({
+          bricks: [
+            {
+              name: 'foobar1',
+              module: 'cta-brick',
+              properties: {},
+              links: [
+                {
+                  'name': 'foobar2',
+                },
+                {
+                  'name': 'foobar3',
+                },
+              ],
+            },
+            {
+              name: 'foobar2',
+              module: 'cta-brick',
+              properties: {},
+              links: [],
+            },
+          ],
+        });
+      }).to.throw(Error, `bricks[0] 'foobar1' has an uninstantiated link links[1] 'foobar3'`);
     });
   });
 
