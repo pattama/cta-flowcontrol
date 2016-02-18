@@ -10,8 +10,8 @@ const sinon = require('sinon');
 require('sinon-as-promised');
 
 const Cement = require('../lib/cement');
-const CementHelper = require('../lib/cementHelper');
-const configuration = require('./cementConfiguration.json');
+const CementHelper = require('../lib/cement-helper');
+const configuration = require('./cement-configuration.json');
 
 const cement = new Cement(configuration);
 
