@@ -1,6 +1,3 @@
-/**
- * Created by U6020429 on 12/02/2016.
- */
 'use strict';
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');

@@ -1,6 +1,3 @@
-/**
- * Created by U6020429 on 12/02/2016.
- */
 'use strict';
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
@@ -152,7 +149,7 @@ describe('Cement - instantiate', function() {
     });
   });
 
-  context('when missing/incorrect links string property in a link', function() {
+  context('when missing/incorrect links Array property in a link', function() {
     it('should throw an error', function() {
       return expect(function() {
         return new Cement({
@@ -161,13 +158,35 @@ describe('Cement - instantiate', function() {
               name: 'mybrick1',
               module: 'cta-brick',
               properties: {},
-              links: {
-                name: {},
-              },
+              links: '',
             },
           ],
         });
       }).to.throw(Error, `missing/incorrect 'links' Array property in bricks[0]`);
+    });
+  });
+
+  context('when not unique link name in brick.links', function() {
+    it('should throw an error', function() {
+      return expect(function() {
+        return new Cement({
+          bricks: [
+            {
+              name: 'mybrick1',
+              module: 'cta-brick',
+              properties: {},
+              links: [
+                {
+                  name: 'foobar',
+                },
+                {
+                  name: 'foobar',
+                },
+              ],
+            },
+          ],
+        });
+      }).to.throw(Error, `bricks[0].links[1] name 'foobar' is not unique`);
     });
   });
 
