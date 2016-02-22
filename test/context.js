@@ -16,14 +16,14 @@ const cementHelper = new CementHelper(cement, 'mybrick1');
 
 describe('Context - instantiate', function() {
   describe('validate data (e.g. job properties)', function() {
-    context('when missing/incorrect \'id\' string property in data', function() {
-      it('should throw an error', function() {
-        const job = {};
-        return expect(function() {
-          return new Context(cementHelper, job);
-        }).to.throw(Error, 'missing/incorrect \'id\' string property in data');
-      });
-    });
+    //context('when missing/incorrect \'id\' string property in data', function() {
+    //  it('should throw an error', function() {
+    //    const job = {};
+    //    return expect(function() {
+    //      return new Context(cementHelper, job);
+    //    }).to.throw(Error, 'missing/incorrect \'id\' string property in data');
+    //  });
+    //});
 
     context('when missing/incorrect \'nature\' object property in data', function() {
       it('should throw an error', function() {

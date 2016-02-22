@@ -356,11 +356,12 @@ describe('Cement - instantiate', function() {
 });
 
 describe('Cement - access control list', function() {
-  const brick = cement.bricks.get('mybrick1');
+  const brickOne = cement.bricks.get('mybrick1');
+  const brickTwo = cement.bricks.get('mybrick2');
 
-  context('when job is permitted to be sent', function() {
+  context('when job is permitted (case #1 - strict quality, strict type)', function() {
     it('should return true', function() {
-      const context = brick.cementHelper.createContext({
+      const context = brickOne.cementHelper.createContext({
         id: '001',
         nature: {
           quality: 'Execution',
@@ -373,9 +374,54 @@ describe('Cement - access control list', function() {
     });
   });
 
-  context('when job is denied to be sent', function() {
+  context('when job is permitted (case #2 - non-strict quality, whatever type)', function() {
+    it('should return true', function() {
+      const context = brickOne.cementHelper.createContext({
+        id: '001',
+        nature: {
+          quality: 'foobar-TestStatus-foobar',
+          type: 'foo',
+        },
+        payload: {},
+      });
+      const canSend = cement.canSend(context, 'mybrick2');
+      expect(canSend).to.be.equal(true);
+    });
+  });
+
+  context('when job is permitted (case #3 - all except one quality)', function() {
+    it('should return true', function() {
+      const context = brickTwo.cementHelper.createContext({
+        id: '001',
+        nature: {
+          quality: 'foo',
+          type: 'bar',
+        },
+        payload: {},
+      });
+      const canSend = cement.canSend(context, 'mybrick3');
+      expect(canSend).to.be.equal(true);
+    });
+  });
+
+  context('when job is denied (case #1 - link not defined)', function() {
+    it('should return true', function() {
+      const context = brickOne.cementHelper.createContext({
+        id: '001',
+        nature: {
+          quality: 'Execution',
+          type: 'CommandLine',
+        },
+        payload: {},
+      });
+      const canSend = cement.canSend(context, 'mybrick3');
+      expect(canSend).to.be.equal(false);
+    });
+  });
+
+  context('when job is denied (case #2 - strict quality, strict type)', function() {
     it('should return false', function() {
-      const context = brick.cementHelper.createContext({
+      const context = brickOne.cementHelper.createContext({
         id: '001',
         nature: {
           quality: 'Result',
@@ -384,6 +430,21 @@ describe('Cement - access control list', function() {
         payload: {},
       });
       const canSend = cement.canSend(context, 'mybrick2');
+      expect(canSend).to.be.equal(false);
+    });
+  });
+
+  context('when job is denied (case #3 - all except one quality)', function() {
+    it('should return false', function() {
+      const context = brickTwo.cementHelper.createContext({
+        id: '001',
+        nature: {
+          quality: 'Execution',
+          type: 'foo',
+        },
+        payload: {},
+      });
+      const canSend = cement.canSend(context, 'mybrick3');
       expect(canSend).to.be.equal(false);
     });
   });
