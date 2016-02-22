@@ -6,22 +6,18 @@
       "properties": {},
       "links": [
         {
-          "name": "mybrick2"
+          "name": "mybrick2",
+          "jobs": [
+            {
+              "quality": "Execution",
+              "type": "CommandLine"
+            }
+          ]
         }
       ]
     },
     {
       "name": "mybrick2",
-      "module": "cta-brick",
-      "properties": {},
-      "links": [
-        {
-          "name": "mybrick3"
-        }
-      ]
-    },
-    {
-      "name": "mybrick3",
       "module": "cta-brick",
       "properties": {}
     }
