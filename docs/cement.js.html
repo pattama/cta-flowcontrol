@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: cement.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: cement.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>'use strict';
+const CementHelper = require('./cement-helper');
+
+/**
+ * Cement class
+ * @class
+ * @property {Map&lt;CementBrick>} bricks - Map of a CementBrick
+ */
+class Cement {
+  /**
+   * Creates a new Cement instance
+   * @constructs Cement
+   * @param {CementConfig} configuration - configuration object for instantiating a new Cement
+   */
+  constructor(configuration) {
+    this.validate(configuration);
+
+    // Instantiating all Bricks
+    this.bricks = new Map();
+    configuration.bricks.forEach((brickConfig, brickIndex) => {
+      let cementHelper;
+      try {
+        cementHelper = new CementHelper(this, brickConfig.name);
+      } catch (error) {
+        throw (new Error(`failed to instantiate new cementHelper in bricks[${brickIndex}]: ${error}`));
+      }
+
+      let BrickConstructor;
+      try {
+        BrickConstructor = require(brickConfig.module);
+      } catch (error) {
+        throw (new Error(`failed to load module '${brickConfig.module}' in bricks[${brickIndex}]: ${error}`));
+      }
+
+      let BrickInstance;
+      try {
+        BrickInstance = new BrickConstructor(cementHelper, brickConfig);
+      } catch (error) {
+        throw (new Error(`failed to instantiate new '${brickConfig.module}' in bricks[${brickIndex}]: ${error}`));
+      }
+
+      this.bricks.set(brickConfig.name, {
+        configuration: brickConfig,
+        cementHelper: cementHelper,
+        instance: BrickInstance,
+      });
+    });
+
+    // Verifying all Links are instantiated
+    configuration.bricks.forEach((brickConfig, brickIndex) => {
+      if ('links' in brickConfig) {
+        brickConfig.links.forEach((link, linkIndex) => {
+          if (!this.bricks.has(link.name)) {
+            throw new Error(`bricks[${brickIndex}] '${brickConfig.name}' has an uninstantiated link`
+              + ` links[${linkIndex}] '${link.name}'`);
+          }
+        });
+      }
+    });
+  }
+
+  /**
+   * Validate all the configuration properties
+   * @param {CementConfig} configuration - configuration object for instantiating a new Cement
+   */
+  validate(configuration) {
+    if (!(Array.isArray(configuration.bricks))) {
+      throw new TypeError('bricks type is not Array');
+    }
+
+    const uniqueNames = [];
+    configuration.bricks.forEach((brickConfig, brickIndex) => {
+      if (!('name' in brickConfig) || typeof brickConfig.name !== 'string') {
+        throw (new Error(`missing/incorrect 'name' string property in bricks[${brickIndex}]`));
+      }
+
+      if (uniqueNames.indexOf(brickConfig.name) !== -1) {
+        throw (new Error(`bricks[${brickIndex}] name '${brickConfig.name}' is not unique`));
+      }
+      uniqueNames.push(brickConfig.name);
+
+      if (!('module' in brickConfig) || typeof brickConfig.module !== 'string') {
+        throw (new Error(`missing/incorrect 'module' string property in bricks[${brickIndex}]`));
+      }
+
+      if ('links' in brickConfig) {
+        if (!Array.isArray(brickConfig.links)) {
+          throw (new Error(`missing/incorrect 'links' Array property in bricks[${brickIndex}]`));
+        } else {
+          const uniqueLinks = [];
+          brickConfig.links.forEach((link, linkIndex) => {
+            if (!('name' in link) || typeof link.name !== 'string') {
+              throw (new Error(`missing/incorrect 'name' string property in bricks[${brickIndex}].links[${linkIndex}]`));
+            }
+
+            if (uniqueLinks.indexOf(link.name) !== -1) {
+              throw (new Error(`bricks[${brickIndex}].links[${linkIndex}] name '${link.name}' is not unique`));
+            }
+            uniqueLinks.push(link.name);
+          });
+        }
+      }
+    });
+  }
+
+  /**
+   * Send a Context to all the links of the Brick which created it
+   * @param {Context} - context
+   */
+  send(context) {
+    const source = this.bricks.get(context.from);
+    if ('links' in source.configuration &amp;&amp; Array.isArray(source.configuration.links)) {
+      source.configuration.links.forEach((link) => {
+        const dest = this.bricks.get(link.name);
+        console.log(`${source.configuration.name}->${link.name} sent: ${JSON.stringify(context.data)}`);
+        dest.instance.onData(context);
+      });
+    }
+  }
+}
+
+exports = module.exports = Cement;
+
+/**
+ * @typedef {Object} CementBrick
+ * @property {BrickConfig} configuration - the configuration data of the Brick
+ * @property {CementHelper} cementHelper - the instance of CementHelper related to the Brick
+ * @property {Brick} instance - the instance of the Brick
+ */
+
+/**
+ * @typedef {Object} CementConfig
+ * @property {BrickConfig[]} bricks - array of brick configurations
+ */
+
+/**
+ * @typedef {Object} BrickConfig
+ * @property {String} name - name of the brick instance (should be unique)
+ * @property {String} module - path or name of the brick module
+ * @property {Object} properties - properties to instantiate the brick (see the module definition)
+ * @property {LinkConfig[]} [links] - Array of LinkConfig
+ */
+
+/**
+ * @typedef {Object} LinkConfig
+ * @property {String} name - name of the brick instance to link (a BrickConfig defining it should exist)
+ */
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-flowcontrol.html">flowcontrol</a></li></ul><h3>Classes</h3><ul><li><a href="Cement.html">Cement</a></li><li><a href="CementHelper.html">CementHelper</a></li><li><a href="Context.html">Context</a></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Tue Feb 23 2016 12:09:17 GMT+0100 (Romance Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
