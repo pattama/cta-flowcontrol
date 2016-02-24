@@ -9,12 +9,11 @@
           "name": "mybrick2",
           "jobs": [
             {
-              "quality": "^Execution$",
-              "type": "^CommandLine$"
+              "quality": "Execution",
+              "type": "CommandLine"
             },
             {
-              "quality": "TestStatus",
-              "type": ".*"
+              "quality": "TestStatus"
             }
           ]
         }
@@ -29,15 +28,23 @@
           "name": "mybrick3",
           "jobs": [
             {
-              "quality": "^(?!Execution$)",
-              "type": ".*"
+              "quality": "Execution",
+              "except": true
             }
           ]
+        },
+        {
+          "name": "mybrick4"
         }
       ]
     },
     {
       "name": "mybrick3",
+      "module": "cta-brick",
+      "properties": {}
+    },
+    {
+      "name": "mybrick4",
       "module": "cta-brick",
       "properties": {}
     }

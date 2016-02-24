@@ -374,12 +374,12 @@ describe('Cement - access control list', function() {
     });
   });
 
-  context('when job is permitted (case #2 - non-strict quality, whatever type)', function() {
+  context('when job is permitted (case #2 - strict quality, whatever type)', function() {
     it('should return true', function() {
       const context = brickOne.cementHelper.createContext({
         id: '001',
         nature: {
-          quality: 'foobar-TestStatus-foobar',
+          quality: 'TestStatus',
           type: 'foo',
         },
         payload: {},
@@ -400,6 +400,21 @@ describe('Cement - access control list', function() {
         payload: {},
       });
       const canSend = cement.canSend(context, 'mybrick3');
+      expect(canSend).to.be.equal(true);
+    });
+  });
+
+  context('when job is permitted (case #4 - all)', function() {
+    it('should return true', function() {
+      const context = brickTwo.cementHelper.createContext({
+        id: '001',
+        nature: {
+          quality: 'foo',
+          type: 'bar',
+        },
+        payload: {},
+      });
+      const canSend = cement.canSend(context, 'mybrick4');
       expect(canSend).to.be.equal(true);
     });
   });
