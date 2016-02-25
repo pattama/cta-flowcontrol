@@ -26,7 +26,14 @@ describe('CementHelper - instantiate', function() {
 describe('CementHelper - create Context', function() {
   it('should return a Context', function(done) {
     const cementHelper = new CementHelper(cement, 'mybrick1');
-    const data = { payload: 'foo' };
+    const data = {
+      id: '001',
+      nature: {
+        quality: 'Execution',
+        type: 'CommandLine',
+      },
+      payload: {},
+    };
     const context = cementHelper.createContext(data);
     expect(context).to.be.an.instanceof(Context);
     expect(context).to.have.property('cementHelper').and.to.be.deep.equal(cementHelper);
@@ -39,7 +46,14 @@ describe('CementHelper - create Context', function() {
 describe('CementHelper - send Context', function() {
   it('should call Cement send()', function() {
     const cementHelper = new CementHelper(cement, 'mybrick1');
-    const data = { payload: 'foo' };
+    const data = {
+      id: '001',
+      nature: {
+        quality: 'Execution',
+        type: 'CommandLine',
+      },
+      payload: {},
+    };
     const context = cementHelper.createContext(data);
     const spy = sinon.spy(cement, 'send');
     cementHelper.send(context);
