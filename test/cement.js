@@ -432,7 +432,7 @@ describe('Cement - access control list', function() {
     });
   });
 
-  context('when job is permitted (case #4 - all)', function() {
+  context('when job is permitted (case #4 - all (undefined jobs Array))', function() {
     it('should return true', function() {
       const context = brickTwo.cementHelper.createContext({
         id: '001',
@@ -443,6 +443,21 @@ describe('Cement - access control list', function() {
         payload: {},
       });
       const canSend = cement.canSend(context, 'mybrick4');
+      expect(canSend).to.be.equal(true);
+    });
+  });
+
+  context('when job is permitted (case #5 - all (empty jobs Array))', function() {
+    it('should return true', function() {
+      const context = brickTwo.cementHelper.createContext({
+        id: '001',
+        nature: {
+          quality: 'foo',
+          type: 'bar',
+        },
+        payload: {},
+      });
+      const canSend = cement.canSend(context, 'mybrick5');
       expect(canSend).to.be.equal(true);
     });
   });

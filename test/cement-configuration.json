@@ -35,6 +35,10 @@
         },
         {
           "name": "mybrick4"
+        },
+        {
+          "name": "mybrick5",
+          "jobs": []
         }
       ]
     },
@@ -45,6 +49,11 @@
     },
     {
       "name": "mybrick4",
+      "module": "cta-brick",
+      "properties": {}
+    },
+    {
+      "name": "mybrick5",
       "module": "cta-brick",
       "properties": {}
     }
