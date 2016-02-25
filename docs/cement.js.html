@@ -113,7 +113,7 @@ class Cement {
 
       if ('links' in brickConfig) {
         if (!Array.isArray(brickConfig.links)) {
-          throw (new Error(`missing/incorrect 'links' Array property in bricks[${brickIndex}]`));
+          throw (new Error(`incorrect 'links' Array property in bricks[${brickIndex}]`));
         } else {
           const uniqueLinks = [];
           brickConfig.links.forEach((link, linkIndex) => {
@@ -125,23 +125,82 @@ class Cement {
               throw (new Error(`bricks[${brickIndex}].links[${linkIndex}] name '${link.name}' is not unique`));
             }
             uniqueLinks.push(link.name);
+
+            if ('jobs' in link) {
+              if (!Array.isArray(link.jobs)) {
+                throw (new Error(`incorrect 'jobs' Array property in bricks[${brickIndex}].links[${linkIndex}]`));
+              } else {
+                link.jobs.forEach((job, jobIndex) => {
+                  if ('type' in job &amp;&amp; typeof job.type !== 'string') {
+                    throw (new Error(`incorrect 'type' string property in bricks[${brickIndex}].links[${linkIndex}].jobs[${jobIndex}]`));
+                  }
+
+                  if ('quality' in job &amp;&amp; typeof job.quality !== 'string') {
+                    throw (new Error(`incorrect 'quality' string property in bricks[${brickIndex}].links[${linkIndex}].jobs[${jobIndex}]`));
+                  }
+
+                  if ('except' in job &amp;&amp; typeof job.except !== 'boolean') {
+                    throw (new Error(`incorrect 'except' boolean property in bricks[${brickIndex}].links[${linkIndex}].jobs[${jobIndex}]`));
+                  }
+                });
+              }
+            }
           });
+        }
+      }
+
+      if ('properties' in brickConfig) {
+        if (typeof brickConfig.properties !== 'object') {
+          throw (new Error(`incorrect 'properties' object property in bricks[${brickIndex}]`));
         }
       }
     });
   }
 
   /**
+   * Checks whether the context can be sent to the destination brick
+   * @param {Context} context - the context to send
+   * @param {String} destination - the name of the destination Brick
+   * @returns {Boolean}
+   */
+  canSend(context, destination) {
+    let canSend = false;
+    const source = this.bricks.get(context.from);
+    if ('links' in source.configuration) {
+      const link = source.configuration.links.find((element) => (element.name === destination));
+      if (typeof link !== 'undefined') {
+        if (!('jobs' in link) || link.jobs.length === 0) {
+          canSend = true;
+        } else {
+          canSend = link.jobs.some((jobdefinition) => {
+            let matched = true;
+            matched &amp;= jobdefinition.quality === undefined || jobdefinition.quality === context.data.nature.quality;
+            matched &amp;= jobdefinition.type === undefined || jobdefinition.type === context.data.nature.type;
+            if ('except' in jobdefinition &amp;&amp; jobdefinition.except === true) {
+              return !matched;
+            }
+            return matched;
+          });
+        }
+      }
+    }
+    return canSend;
+  }
+
+  /**
    * Send a Context to all the links of the Brick which created it
-   * @param {Context} - context
+   * @param {Context} context - the context to send
    */
   send(context) {
+    const self = this;
     const source = this.bricks.get(context.from);
-    if ('links' in source.configuration &amp;&amp; Array.isArray(source.configuration.links)) {
+    if ('links' in source.configuration) {
       source.configuration.links.forEach((link) => {
-        const dest = this.bricks.get(link.name);
-        console.log(`${source.configuration.name}->${link.name} sent: ${JSON.stringify(context.data)}`);
-        dest.instance.onData(context);
+        if (self.canSend(context, link.name)) {
+          const dest = this.bricks.get(link.name);
+          console.log(`${source.configuration.name}->${link.name} sent: ${JSON.stringify(context.data)}`);
+          dest.instance.onData(context);
+        }
       });
     }
   }
@@ -157,6 +216,13 @@ exports = module.exports = Cement;
  */
 
 /**
+ * @typedef {Object} JobDefinition
+ * @property {String} type - type of Jobs that should be permitted
+ * @property {String} quality - quality of Jobs that should be permitted
+ * @property {Boolean} [except] - if true, deny Jobs instead of permitting. Permit everything else.
+ */
+
+/**
  * @typedef {Object} CementConfig
  * @property {BrickConfig[]} bricks - array of brick configurations
  */
@@ -165,13 +231,14 @@ exports = module.exports = Cement;
  * @typedef {Object} BrickConfig
  * @property {String} name - name of the brick instance (should be unique)
  * @property {String} module - path or name of the brick module
- * @property {Object} properties - properties to instantiate the brick (see the module definition)
+ * @property {Object} [properties] - properties to instantiate the brick (see the module definition)
  * @property {LinkConfig[]} [links] - Array of LinkConfig
  */
 
 /**
  * @typedef {Object} LinkConfig
  * @property {String} name - name of the brick instance to link (a BrickConfig defining it should exist)
+ * @property {JobDefinition[]} [jobs] - array of definitions of Jobs (e.g. nature) permitted or denied to be sent. If empty or undefined, all data will be permitted.
  */
 </code></pre>
         </article>
@@ -189,7 +256,7 @@ exports = module.exports = Cement;
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Tue Feb 23 2016 12:09:17 GMT+0100 (Romance Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Thu Feb 25 2016 11:27:00 GMT+0100 (Romance Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>
