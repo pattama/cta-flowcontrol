@@ -181,7 +181,7 @@ describe('Cement - instantiate', function() {
       });
     });
 
-    context('when missing/incorrect type property in a job', function() {
+    context('when incorrect type property in a job', function() {
       it('should throw an error', function() {
         return expect(function() {
           return new Cement({
@@ -207,7 +207,7 @@ describe('Cement - instantiate', function() {
       });
     });
 
-    context('when missing/incorrect quality property in a job', function() {
+    context('when incorrect quality property in a job', function() {
       it('should throw an error', function() {
         return expect(function() {
           return new Cement({
@@ -231,6 +231,34 @@ describe('Cement - instantiate', function() {
             ],
           });
         }).to.throw(Error, `incorrect 'quality' string property in bricks[0].links[0].jobs[0]`);
+      });
+    });
+
+    context('when incorrect except property in a job', function() {
+      it('should throw an error', function() {
+        return expect(function() {
+          return new Cement({
+            bricks: [
+              {
+                name: 'mybrick1',
+                module: 'cta-brick',
+                properties: {},
+                links: [
+                  {
+                    name: 'mybrick2',
+                    jobs: [
+                      {
+                        type: 'Execution',
+                        quality: 'CommandLine',
+                        except: 'not-a-boolean',
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          });
+        }).to.throw(Error, `incorrect 'except' boolean property in bricks[0].links[0].jobs[0]`);
       });
     });
   });
