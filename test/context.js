@@ -96,8 +96,8 @@ describe('Context - instantiate', function() {
   });
 });
 
-describe('Context - send', function() {
-  it('should call CimentHelper send()', function() {
+describe('Context - publish', function() {
+  it('should call CimentHelper publish()', function() {
     const context = new Context(cementHelper, {
       id: '001',
       nature: {
@@ -106,8 +106,8 @@ describe('Context - send', function() {
       },
       payload: {},
     });
-    const spy = sinon.spy(cementHelper, 'send');
-    context.send();
+    const spy = sinon.spy(cementHelper, 'publish');
+    context.publish();
     return expect(spy.calledOnce).to.be.true;
   });
 });

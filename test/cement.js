@@ -96,8 +96,8 @@ describe('Cement - instantiate', function() {
     });
   });
 
-  describe('validating links', function() {
-    context('when missing/incorrect links Array property in a brick', function() {
+  describe('validating publish contracts', function() {
+    context('when incorrect publish Array property in a brick', function() {
       it('should throw an error', function() {
         return expect(function() {
           return new Cement({
@@ -106,15 +106,15 @@ describe('Cement - instantiate', function() {
                 name: 'mybrick1',
                 module: 'cta-brick',
                 properties: {},
-                links: '',
+                publish: '',
               },
             ],
           });
-        }).to.throw(Error, `incorrect 'links' Array property in bricks[0]`);
+        }).to.throw(Error, `incorrect 'publish' Array property in bricks[0]`);
       });
     });
 
-    context('when missing/incorrect name String property in a link', function() {
+    context('when missing/incorrect topic String property in a publish', function() {
       it('should throw an error', function() {
         return expect(function() {
           return new Cement({
@@ -123,19 +123,19 @@ describe('Cement - instantiate', function() {
                 name: 'mybrick1',
                 module: 'cta-brick',
                 properties: {},
-                links: [
+                publish: [
                   {
-                    name: {},
+                    topic: {},
                   },
                 ],
               },
             ],
           });
-        }).to.throw(Error, `missing/incorrect 'name' string property in bricks[0].links[0]`);
+        }).to.throw(Error, `missing/incorrect 'topic' string property in bricks[0].publish[0]`);
       });
     });
 
-    context('when not unique link name in brick.links', function() {
+    context('when incorrect data Array property in a publish', function() {
       it('should throw an error', function() {
         return expect(function() {
           return new Cement({
@@ -144,22 +144,20 @@ describe('Cement - instantiate', function() {
                 name: 'mybrick1',
                 module: 'cta-brick',
                 properties: {},
-                links: [
+                publish: [
                   {
-                    name: 'foobar',
-                  },
-                  {
-                    name: 'foobar',
+                    topic: 'channel1',
+                    data: '',
                   },
                 ],
               },
             ],
           });
-        }).to.throw(Error, `bricks[0].links[1] name 'foobar' is not unique`);
+        }).to.throw(Error, `incorrect 'data' Array property in bricks[0].publish[0]`);
       });
     });
 
-    context('when incorrect jobs Array property in a link', function() {
+    context('when empty data Array property in a publish', function() {
       it('should throw an error', function() {
         return expect(function() {
           return new Cement({
@@ -168,20 +166,20 @@ describe('Cement - instantiate', function() {
                 name: 'mybrick1',
                 module: 'cta-brick',
                 properties: {},
-                links: [
+                publish: [
                   {
-                    name: 'mybrick2',
-                    jobs: '',
+                    topic: 'channel1',
+                    data: [],
                   },
                 ],
               },
             ],
           });
-        }).to.throw(Error, `incorrect 'jobs' Array property in bricks[0].links[0]`);
+        }).to.throw(Error, `empty 'data' Array property in bricks[0].publish[0]`);
       });
     });
 
-    context('when incorrect type property in a job', function() {
+    context('when topic is described more than once in publish contracts', function() {
       it('should throw an error', function() {
         return expect(function() {
           return new Cement({
@@ -190,24 +188,26 @@ describe('Cement - instantiate', function() {
                 name: 'mybrick1',
                 module: 'cta-brick',
                 properties: {},
-                links: [
+                publish: [
                   {
-                    name: 'mybrick2',
-                    jobs: [
-                      {
-                        type: {},
-                      },
-                    ],
+                    topic: 'some.topic',
+                    data: [{}],
+                  },
+                  {
+                    topic: 'some.topic',
+                    data: [{}],
                   },
                 ],
               },
             ],
           });
-        }).to.throw(Error, `incorrect 'type' string property in bricks[0].links[0].jobs[0]`);
+        }).to.throw(Error, `publish contract 'some.topic' is declared more than once`);
       });
     });
+  });
 
-    context('when incorrect quality property in a job', function() {
+  describe('validating subscribe contracts', function() {
+    context('when incorrect subscribe Array property in a brick', function() {
       it('should throw an error', function() {
         return expect(function() {
           return new Cement({
@@ -216,25 +216,15 @@ describe('Cement - instantiate', function() {
                 name: 'mybrick1',
                 module: 'cta-brick',
                 properties: {},
-                links: [
-                  {
-                    name: 'mybrick2',
-                    jobs: [
-                      {
-                        type: 'Execution',
-                        quality: {},
-                      },
-                    ],
-                  },
-                ],
+                subscribe: '',
               },
             ],
           });
-        }).to.throw(Error, `incorrect 'quality' string property in bricks[0].links[0].jobs[0]`);
+        }).to.throw(Error, `incorrect 'subscribe' Array property in bricks[0]`);
       });
     });
 
-    context('when incorrect except property in a job', function() {
+    context('when missing/incorrect topic String property in a subscribe', function() {
       it('should throw an error', function() {
         return expect(function() {
           return new Cement({
@@ -243,22 +233,85 @@ describe('Cement - instantiate', function() {
                 name: 'mybrick1',
                 module: 'cta-brick',
                 properties: {},
-                links: [
+                subscribe: [
                   {
-                    name: 'mybrick2',
-                    jobs: [
-                      {
-                        type: 'Execution',
-                        quality: 'CommandLine',
-                        except: 'not-a-boolean',
-                      },
-                    ],
+                    topic: {},
                   },
                 ],
               },
             ],
           });
-        }).to.throw(Error, `incorrect 'except' boolean property in bricks[0].links[0].jobs[0]`);
+        }).to.throw(Error, `missing/incorrect 'topic' string property in bricks[0].subscribe[0]`);
+      });
+    });
+
+    context('when incorrect data Array property in a subscribe', function() {
+      it('should throw an error', function() {
+        return expect(function() {
+          return new Cement({
+            bricks: [
+              {
+                name: 'mybrick1',
+                module: 'cta-brick',
+                properties: {},
+                subscribe: [
+                  {
+                    topic: 'channel1',
+                    data: '',
+                  },
+                ],
+              },
+            ],
+          });
+        }).to.throw(Error, `incorrect 'data' Array property in bricks[0].subscribe[0]`);
+      });
+    });
+
+    context('when empty data Array property in a subscribe', function() {
+      it('should throw an error', function() {
+        return expect(function() {
+          return new Cement({
+            bricks: [
+              {
+                name: 'mybrick1',
+                module: 'cta-brick',
+                properties: {},
+                subscribe: [
+                  {
+                    topic: 'channel1',
+                    data: [],
+                  },
+                ],
+              },
+            ],
+          });
+        }).to.throw(Error, `empty 'data' Array property in bricks[0].subscribe[0]`);
+      });
+    });
+
+    context('when topic is described more than once in subscribe contracts', function() {
+      it('should throw an error', function() {
+        return expect(function() {
+          return new Cement({
+            bricks: [
+              {
+                name: 'mybrick1',
+                module: 'cta-brick',
+                properties: {},
+                subscribe: [
+                  {
+                    topic: 'some.topic',
+                    data: [{}],
+                  },
+                  {
+                    topic: 'some.topic',
+                    data: [{}],
+                  },
+                ],
+              },
+            ],
+          });
+        }).to.throw(Error, `subscribe contract 'some.topic' is declared more than once`);
       });
     });
   });
@@ -335,182 +388,219 @@ describe('Cement - instantiate', function() {
         }).to.throw(Error, `failed to instantiate new 'stub-brick' in bricks[0]: ${stubError}`);
       });
     });
-
-    context('when a brick has an uninstantiated link', function() {
-      it('should throw an error', function() {
-        return expect(function() {
-          return new Cement({
-            bricks: [
-              {
-                name: 'foobar1',
-                module: 'cta-brick',
-                properties: {},
-                links: [
-                  {
-                    'name': 'foobar2',
-                  },
-                  {
-                    'name': 'foobar3',
-                  },
-                ],
-              },
-              {
-                name: 'foobar2',
-                module: 'cta-brick',
-                properties: {},
-                links: [],
-              },
-            ],
-          });
-        }).to.throw(Error, `bricks[0] 'foobar1' has an uninstantiated link links[1] 'foobar3'`);
-      });
-    });
   });
 
   context('when valid', function() {
     it('should return a new Cement', function(done) {
       expect(cement).to.be.an.instanceof(Cement);
       expect(cement).to.have.property('bricks').and.to.be.a('Map');
+      expect(cement).to.have.property('channels').and.to.be.a('Map');
       configuration.bricks.forEach(function(brick) {
         expect(cement.bricks.has(brick.name)).to.be.equal(true);
         expect(cement.bricks.get(brick.name)).to.have.property('configuration');
         expect(cement.bricks.get(brick.name).configuration).to.be.deep.equal(brick);
         expect(cement.bricks.get(brick.name)).to.have.property('cementHelper').and.to.be.an.instanceof(CementHelper);
         expect(cement.bricks.get(brick.name)).to.have.property('instance').and.to.be.an.instanceof(require(brick.module));
+        if (Array.isArray(brick.publish)) {
+          brick.publish.forEach(function(pubContract) {
+            expect(cement.channels.has(pubContract.topic)).to.be.equal(true);
+            const channel = cement.channels.get(pubContract.topic);
+            expect(channel.publishers.has(brick.name)).to.be.equal(true);
+            expect(channel.publishers.get(brick.name)).to.be.equal(pubContract.data);
+          });
+        }
+
+        if (Array.isArray(brick.subscribe)) {
+          brick.subscribe.forEach(function(subContract) {
+            expect(cement.channels.has(subContract.topic)).to.be.equal(true);
+            const channel = cement.channels.get(subContract.topic);
+            expect(channel.subscribers.has(brick.name)).to.be.equal(true);
+            expect(channel.subscribers.get(brick.name)).to.be.equal(subContract.data);
+          });
+        }
       });
       done();
     });
   });
 });
 
-describe('Cement - access control list', function() {
-  const brickOne = cement.bricks.get('mybrick1');
-  const brickTwo = cement.bricks.get('mybrick2');
+//describe('Cement - access control list', function() {
+//  const brickOne = cement.bricks.get('mybrick1');
+//  const brickTwo = cement.bricks.get('mybrick2');
+//
+//  context('when job is permitted (case #1 - strict quality, strict type)', function() {
+//    it('should return true', function() {
+//      const context = brickOne.cementHelper.createContext({
+//        id: '001',
+//        nature: {
+//          quality: 'Execution',
+//          type: 'CommandLine',
+//        },
+//        payload: {},
+//      });
+//      const canSend = cement.canSend(context, 'mybrick2');
+//      expect(canSend).to.be.equal(true);
+//    });
+//  });
+//
+//  context('when job is permitted (case #2 - strict quality, whatever type)', function() {
+//    it('should return true', function() {
+//      const context = brickOne.cementHelper.createContext({
+//        id: '001',
+//        nature: {
+//          quality: 'TestStatus',
+//          type: 'foo',
+//        },
+//        payload: {},
+//      });
+//      const canSend = cement.canSend(context, 'mybrick2');
+//      expect(canSend).to.be.equal(true);
+//    });
+//  });
+//
+//  context('when job is permitted (case #3 - all except one quality)', function() {
+//    it('should return true', function() {
+//      const context = brickTwo.cementHelper.createContext({
+//        id: '001',
+//        nature: {
+//          quality: 'foo',
+//          type: 'bar',
+//        },
+//        payload: {},
+//      });
+//      const canSend = cement.canSend(context, 'mybrick3');
+//      expect(canSend).to.be.equal(true);
+//    });
+//  });
+//
+//  context('when job is permitted (case #4 - all (undefined jobs Array))', function() {
+//    it('should return true', function() {
+//      const context = brickTwo.cementHelper.createContext({
+//        id: '001',
+//        nature: {
+//          quality: 'foo',
+//          type: 'bar',
+//        },
+//        payload: {},
+//      });
+//      const canSend = cement.canSend(context, 'mybrick4');
+//      expect(canSend).to.be.equal(true);
+//    });
+//  });
+//
+//  context('when job is permitted (case #5 - all (empty jobs Array))', function() {
+//    it('should return true', function() {
+//      const context = brickTwo.cementHelper.createContext({
+//        id: '001',
+//        nature: {
+//          quality: 'foo',
+//          type: 'bar',
+//        },
+//        payload: {},
+//      });
+//      const canSend = cement.canSend(context, 'mybrick5');
+//      expect(canSend).to.be.equal(true);
+//    });
+//  });
+//
+//  context('when job is denied (case #1 - link not defined)', function() {
+//    it('should return true', function() {
+//      const context = brickOne.cementHelper.createContext({
+//        id: '001',
+//        nature: {
+//          quality: 'Execution',
+//          type: 'CommandLine',
+//        },
+//        payload: {},
+//      });
+//      const canSend = cement.canSend(context, 'mybrick3');
+//      expect(canSend).to.be.equal(false);
+//    });
+//  });
+//
+//  context('when job is denied (case #2 - strict quality, strict type)', function() {
+//    it('should return false', function() {
+//      const context = brickOne.cementHelper.createContext({
+//        id: '001',
+//        nature: {
+//          quality: 'Result',
+//          type: 'CommandLine',
+//        },
+//        payload: {},
+//      });
+//      const canSend = cement.canSend(context, 'mybrick2');
+//      expect(canSend).to.be.equal(false);
+//    });
+//  });
+//
+//  context('when job is denied (case #3 - all except one quality)', function() {
+//    it('should return false', function() {
+//      const context = brickTwo.cementHelper.createContext({
+//        id: '001',
+//        nature: {
+//          quality: 'Execution',
+//          type: 'foo',
+//        },
+//        payload: {},
+//      });
+//      const canSend = cement.canSend(context, 'mybrick3');
+//      expect(canSend).to.be.equal(false);
+//    });
+//  });
+//});
 
-  context('when job is permitted (case #1 - strict quality, strict type)', function() {
-    it('should return true', function() {
-      const context = brickOne.cementHelper.createContext({
-        id: '001',
-        nature: {
-          quality: 'Execution',
-          type: 'CommandLine',
-        },
-        payload: {},
+describe('Cement - get publishing channels (e.g. destinations) of a brick', function() {
+  const brick = cement.bricks.get('mybrick1');
+
+  describe('arguments validation', function() {
+    context('when missing/incorrect \'name\' string property', function() {
+      it('should throw an error', function() {
+        return expect(function() {
+          cement.getDestinations();
+        }).to.throw(Error, 'missing/incorrect \'name\' string property');
       });
-      const canSend = cement.canSend(context, 'mybrick2');
-      expect(canSend).to.be.equal(true);
     });
   });
 
-  context('when job is permitted (case #2 - strict quality, whatever type)', function() {
-    it('should return true', function() {
-      const context = brickOne.cementHelper.createContext({
-        id: '001',
-        nature: {
-          quality: 'TestStatus',
-          type: 'foo',
-        },
-        payload: {},
+  describe('get all', function() {
+    it('should return an array of channels', function() {
+      const channels = cement.getDestinations('mybrick1');
+      expect(channels).to.be.an('Array');
+      channels.forEach((channel) => {
+        const brickHasPubTopic = brick.configuration.publish.some((pub) => {
+          return pub.topic === channel.topic;
+        });
+        expect(brickHasPubTopic).to.equal(true);
       });
-      const canSend = cement.canSend(context, 'mybrick2');
-      expect(canSend).to.be.equal(true);
     });
   });
 
-  context('when job is permitted (case #3 - all except one quality)', function() {
-    it('should return true', function() {
-      const context = brickTwo.cementHelper.createContext({
-        id: '001',
+  describe('get those matching data contract', function() {
+    it('should return an array of channels', function() {
+      const data = {
         nature: {
-          quality: 'foo',
-          type: 'bar',
+          type: 'Execution',
         },
-        payload: {},
-      });
-      const canSend = cement.canSend(context, 'mybrick3');
-      expect(canSend).to.be.equal(true);
-    });
-  });
-
-  context('when job is permitted (case #4 - all (undefined jobs Array))', function() {
-    it('should return true', function() {
-      const context = brickTwo.cementHelper.createContext({
-        id: '001',
-        nature: {
-          quality: 'foo',
-          type: 'bar',
+        payload: {
+          foo: 'bar',
         },
-        payload: {},
+      };
+      const channels = cement.getDestinations('mybrick1', data);
+      expect(channels).to.be.an('Array');
+      channels.forEach((channel) => {
+        const brickHasPubTopic = brick.configuration.publish.some((pub) => {
+          return pub.topic === channel.topic;
+        });
+        expect(brickHasPubTopic).to.equal(true);
+        expect(channel.canProduce('mybrick1', data)).to.equal(true);
       });
-      const canSend = cement.canSend(context, 'mybrick4');
-      expect(canSend).to.be.equal(true);
-    });
-  });
-
-  context('when job is permitted (case #5 - all (empty jobs Array))', function() {
-    it('should return true', function() {
-      const context = brickTwo.cementHelper.createContext({
-        id: '001',
-        nature: {
-          quality: 'foo',
-          type: 'bar',
-        },
-        payload: {},
-      });
-      const canSend = cement.canSend(context, 'mybrick5');
-      expect(canSend).to.be.equal(true);
-    });
-  });
-
-  context('when job is denied (case #1 - link not defined)', function() {
-    it('should return true', function() {
-      const context = brickOne.cementHelper.createContext({
-        id: '001',
-        nature: {
-          quality: 'Execution',
-          type: 'CommandLine',
-        },
-        payload: {},
-      });
-      const canSend = cement.canSend(context, 'mybrick3');
-      expect(canSend).to.be.equal(false);
-    });
-  });
-
-  context('when job is denied (case #2 - strict quality, strict type)', function() {
-    it('should return false', function() {
-      const context = brickOne.cementHelper.createContext({
-        id: '001',
-        nature: {
-          quality: 'Result',
-          type: 'CommandLine',
-        },
-        payload: {},
-      });
-      const canSend = cement.canSend(context, 'mybrick2');
-      expect(canSend).to.be.equal(false);
-    });
-  });
-
-  context('when job is denied (case #3 - all except one quality)', function() {
-    it('should return false', function() {
-      const context = brickTwo.cementHelper.createContext({
-        id: '001',
-        nature: {
-          quality: 'Execution',
-          type: 'foo',
-        },
-        payload: {},
-      });
-      const canSend = cement.canSend(context, 'mybrick3');
-      expect(canSend).to.be.equal(false);
     });
   });
 });
 
-describe('Cement - send Context', function() {
+describe('Cement - publish Context', function() {
   const brick = cement.bricks.get('mybrick1');
-  const spyCementHelper = sinon.spy(brick.cementHelper, 'send');
+  const spyCementHelper = sinon.spy(brick.cementHelper, 'publish');
   const spyLinks = [];
   if (brick.configuration.links && Array.isArray(brick.configuration.links)) {
     brick.configuration.links.forEach(function(link) {
@@ -526,11 +616,11 @@ describe('Cement - send Context', function() {
         type: 'CommandLine',
       },
       payload: {},
-    }).send();
+    }).publish();
     setInterval(done, 2000);
   });
 
-  it('should call send() and all linked Bricks onData()', function(done) {
+  it('should call publish() and all linked Bricks onData()', function(done) {
     expect(spyCementHelper.calledOnce).to.be.equal(true);
     spyLinks.forEach(function(spyLink) {
       expect(spyLink.calledOnce).to.be.equal(true);
@@ -539,7 +629,7 @@ describe('Cement - send Context', function() {
   });
 
   after(function(done) {
-    brick.cementHelper.send.restore();
+    brick.cementHelper.publish.restore();
     if (brick.configuration.links && Array.isArray(brick.configuration.links)) {
       brick.configuration.links.forEach(function(link) {
         cement.bricks.get(link.name).instance.onData.restore();
