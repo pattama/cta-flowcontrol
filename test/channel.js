@@ -83,13 +83,23 @@ describe('Channel - add publisher', function() {
     });
   });
 
+  context('when missing/incorrect \'brick\' object property', function() {
+    it('should throw an error', function() {
+      return expect(function() {
+        channel.addPublisher('publisher1', [{}]);
+      }).to.throw(Error, 'missing/incorrect \'brick\' object property');
+    });
+  });
+
   context('when valid arguments', function() {
     it('should add the publisher, return channel', function() {
       const name = 'publisher1';
       const data = [{ type: 'foobar'}];
-      expect(channel.addPublisher(name, data)).to.equal(channel);
+      const brick = {};
+      expect(channel.addPublisher(name, data, brick)).to.equal(channel);
       expect(channel.publishers.has(name)).to.equal(true);
-      expect(channel.publishers.get(name)).to.deep.equal(data);
+      expect(channel.publishers.get(name)).to.have.property('data').and.to.deep.equal(data);
+      expect(channel.publishers.get(name)).to.have.property('brick').and.to.deep.equal(brick);
     });
   });
 
@@ -98,9 +108,10 @@ describe('Channel - add publisher', function() {
       const name = 'publisher2';
       const data = [{ type: 'foobar'}];
       const data2 = [{ type: 'foobar2'}];
-      channel.addPublisher(name, data).addPublisher(name, data2);
+      const brick = {};
+      channel.addPublisher(name, data, brick).addPublisher(name, data2, {});
       expect(channel.publishers.has(name)).to.equal(true);
-      expect(channel.publishers.get(name)).to.deep.equal(data.concat(data2));
+      expect(channel.publishers.get(name)).to.have.property('data').and.to.deep.equal(data.concat(data2));
     });
   });
 });
@@ -135,24 +146,35 @@ describe('Channel - add subscriber', function() {
     });
   });
 
+  context('when missing/incorrect \'brick\' object property', function() {
+    it('should throw an error', function() {
+      return expect(function() {
+        channel.addSubscriber('subscriber1', [{}]);
+      }).to.throw(Error, 'missing/incorrect \'brick\' object property');
+    });
+  });
+
   context('when valid arguments', function() {
     it('should add the subscriber, return channel', function() {
-      const topic = 'subscriber1';
+      const name = 'subscriber1';
       const data = [{ type: 'foobar'}];
-      expect(channel.addSubscriber(topic, data)).to.equal(channel);
-      expect(channel.subscribers.has(topic)).to.equal(true);
-      expect(channel.subscribers.get(topic)).to.deep.equal(data);
+      const brick = {};
+      expect(channel.addSubscriber(name, data, brick)).to.equal(channel);
+      expect(channel.subscribers.has(name)).to.equal(true);
+      expect(channel.subscribers.get(name)).to.have.property('data').and.to.deep.equal(data);
+      expect(channel.subscribers.get(name)).to.have.property('brick').and.to.deep.equal(brick);
     });
   });
 
   context('when valid arguments but subscriber already exists', function() {
     it('should add the data contracts to the existing subscriber (concat)', function() {
-      const topic = 'subscribers2';
+      const name = 'subscribers2';
       const data = [{ type: 'foobar'}];
       const data2 = [{ type: 'foobar2'}];
-      channel.addSubscriber(topic, data).addSubscriber(topic, data2);
-      expect(channel.subscribers.has(topic)).to.equal(true);
-      expect(channel.subscribers.get(topic)).to.deep.equal(data.concat(data2));
+      const brick = {};
+      channel.addSubscriber(name, data, brick).addSubscriber(name, data2, brick);
+      expect(channel.subscribers.has(name)).to.equal(true);
+      expect(channel.subscribers.get(name)).to.have.property('data').and.to.deep.equal(data.concat(data2));
     });
   });
 });
@@ -169,7 +191,8 @@ describe('Channel - check publisher can produce data', function() {
         },
       },
     ];
-    channel.addPublisher(name, dataContracts);
+    const brick = {};
+    channel.addPublisher(name, dataContracts, brick);
   });
 
   context('when missing/incorrect \'name\' string property', function() {
@@ -242,7 +265,8 @@ describe('Channel - check subscriber can consume data', function() {
         },
       },
     ];
-    channel.addSubscriber(name, dataContracts);
+    const brick = {};
+    channel.addSubscriber(name, dataContracts, brick);
   });
 
   context('when missing/incorrect \'name\' string property', function() {
@@ -313,6 +337,7 @@ describe('Channel - get subscribers that can consume data', function() {
       },
     },
   ];
+  const brick1 = {};
   const name2 = 'subscriber2';
   const dataContracts2 = [
     {
@@ -326,10 +351,11 @@ describe('Channel - get subscribers that can consume data', function() {
       },
     },
   ];
+  const brick2 = {};
   before(function() {
     channel = new Channel('some.topic');
-    channel.addSubscriber(name1, dataContracts1);
-    channel.addSubscriber(name2, dataContracts2);
+    channel.addSubscriber(name1, dataContracts1, brick1);
+    channel.addSubscriber(name2, dataContracts2, brick2);
   });
 
   context('when missing/incorrect \'data\' object property', function() {

@@ -196,7 +196,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="cement.js.html">cement.js</a>, <a href="cement.js.html#line9">line 9</a>
+        <a href="cement.js.html">cement.js</a>, <a href="cement.js.html#line10">line 10</a>
     </li></ul></dd>
     
 
@@ -245,14 +245,14 @@
 
     
 
-    <h4 class="name" id="canSend"><span class="type-signature"></span>canSend<span class="signature">(context, destination)</span><span class="type-signature"> &rarr; {Boolean}</span></h4>
+    <h4 class="name" id="getDestinations"><span class="type-signature"></span>getDestinations<span class="signature">(name, data<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Array.&lt;<a href="Channel.html">Channel</a>>}</span></h4>
 
     
 
 
 
 <div class="description">
-    Checks whether the context can be sent to the destination brick
+    Get publishing channels of a brickIf data is provided, get only channels where data contract is fulfilled
 </div>
 
 
@@ -276,6 +276,8 @@
         <th>Type</th>
 
         
+        <th>Attributes</th>
+        
 
         
 
@@ -288,30 +290,7 @@
 
         <tr>
             
-                <td class="name"><code>context</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="Context.html">Context</a></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">the context to send</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>destination</code></td>
+                <td class="name"><code>name</code></td>
             
 
             <td class="type">
@@ -324,10 +303,51 @@
             </td>
 
             
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
 
             
 
-            <td class="description last">the name of the destination Brick</td>
+            <td class="description last">name of the brick</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">data to be published</td>
         </tr>
 
     
@@ -368,7 +388,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="cement.js.html">cement.js</a>, <a href="cement.js.html#line138">line 138</a>
+        <a href="cement.js.html">cement.js</a>, <a href="cement.js.html#line161">line 161</a>
     </li></ul></dd>
     
 
@@ -402,7 +422,7 @@
     </dt>
     <dd>
         
-<span class="param-type">Boolean</span>
+<span class="param-type">Array.&lt;<a href="Channel.html">Channel</a>></span>
 
 
     </dd>
@@ -417,14 +437,14 @@
 
     
 
-    <h4 class="name" id="send"><span class="type-signature"></span>send<span class="signature">(context)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="publish"><span class="type-signature"></span>publish<span class="signature">(context)</span><span class="type-signature"></span></h4>
 
     
 
 
 
 <div class="description">
-    Send a Context to all the links of the Brick which created it
+    Publish a Context using channels
 </div>
 
 
@@ -476,7 +496,7 @@
 
             
 
-            <td class="description last">the context to send</td>
+            <td class="description last">the context to publish</td>
         </tr>
 
     
@@ -517,7 +537,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="cement.js.html">cement.js</a>, <a href="cement.js.html#line166">line 166</a>
+        <a href="cement.js.html">cement.js</a>, <a href="cement.js.html#line181">line 181</a>
     </li></ul></dd>
     
 
@@ -648,7 +668,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="cement.js.html">cement.js</a>, <a href="cement.js.html#line66">line 66</a>
+        <a href="cement.js.html">cement.js</a>, <a href="cement.js.html#line74">line 74</a>
     </li></ul></dd>
     
 
@@ -690,13 +710,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-flowcontrol.html">flowcontrol</a></li></ul><h3>Classes</h3><ul><li><a href="Cement.html">Cement</a></li><li><a href="CementHelper.html">CementHelper</a></li><li><a href="Context.html">Context</a></li></ul><h3><a href="global.html">Global</a></h3>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-flowcontrol.html">flowcontrol</a></li></ul><h3>Classes</h3><ul><li><a href="Cement.html">Cement</a></li><li><a href="CementHelper.html">CementHelper</a></li><li><a href="Channel.html">Channel</a></li><li><a href="Context.html">Context</a></li></ul><h3><a href="global.html">Global</a></h3>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Thu Feb 25 2016 11:27:00 GMT+0100 (Romance Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Tue Mar 08 2016 09:31:03 GMT+0100 (Romance Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>

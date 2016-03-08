@@ -406,7 +406,8 @@ describe('Cement - instantiate', function() {
             expect(cement.channels.has(pubContract.topic)).to.be.equal(true);
             const channel = cement.channels.get(pubContract.topic);
             expect(channel.publishers.has(brick.name)).to.be.equal(true);
-            expect(channel.publishers.get(brick.name)).to.be.equal(pubContract.data);
+            expect(channel.publishers.get(brick.name)).to.have.property('data').and.to.deep.equal(pubContract.data);
+            expect(channel.publishers.get(brick.name)).to.have.property('brick').and.to.be.an.instanceof(require(brick.module));
           });
         }
 
@@ -415,7 +416,8 @@ describe('Cement - instantiate', function() {
             expect(cement.channels.has(subContract.topic)).to.be.equal(true);
             const channel = cement.channels.get(subContract.topic);
             expect(channel.subscribers.has(brick.name)).to.be.equal(true);
-            expect(channel.subscribers.get(brick.name)).to.be.equal(subContract.data);
+            expect(channel.subscribers.get(brick.name)).to.have.property('data').and.to.deep.equal(subContract.data);
+            expect(channel.subscribers.get(brick.name)).to.have.property('brick').and.to.be.an.instanceof(require(brick.module));
           });
         }
       });

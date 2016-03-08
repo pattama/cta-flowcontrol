@@ -28,6 +28,7 @@
         <article>
             <pre class="prettyprint source linenums"><code>'use strict';
 const CementHelper = require('./cement-helper');
+const Channel = require('./channel');
 
 /**
  * Cement class
@@ -45,6 +46,7 @@ class Cement {
 
     // Instantiating all Bricks
     this.bricks = new Map();
+    this.channels = new Map();
     configuration.bricks.forEach((brickConfig, brickIndex) => {
       let cementHelper;
       try {
@@ -72,16 +74,22 @@ class Cement {
         cementHelper: cementHelper,
         instance: BrickInstance,
       });
-    });
 
-    // Verifying all Links are instantiated
-    configuration.bricks.forEach((brickConfig, brickIndex) => {
-      if ('links' in brickConfig) {
-        brickConfig.links.forEach((link, linkIndex) => {
-          if (!this.bricks.has(link.name)) {
-            throw new Error(`bricks[${brickIndex}] '${brickConfig.name}' has an uninstantiated link`
-              + ` links[${linkIndex}] '${link.name}'`);
+      if (Array.isArray(brickConfig.publish)) {
+        brickConfig.publish.forEach((pubContract) => {
+          if (!this.channels.has(pubContract.topic)) {
+            this.channels.set(pubContract.topic, new Channel(pubContract.topic));
           }
+          this.channels.get(pubContract.topic).addPublisher(brickConfig.name, pubContract.data, BrickInstance);
+        });
+      }
+
+      if (Array.isArray(brickConfig.subscribe)) {
+        brickConfig.subscribe.forEach((subContract) => {
+          if (!this.channels.has(subContract.topic)) {
+            this.channels.set(subContract.topic, new Channel(subContract.topic));
+          }
+          this.channels.get(subContract.topic).addSubscriber(brickConfig.name, subContract.data, BrickInstance);
         });
       }
     });
@@ -111,96 +119,99 @@ class Cement {
         throw (new Error(`missing/incorrect 'module' string property in bricks[${brickIndex}]`));
       }
 
-      if ('links' in brickConfig) {
-        if (!Array.isArray(brickConfig.links)) {
-          throw (new Error(`incorrect 'links' Array property in bricks[${brickIndex}]`));
+      if ('properties' in brickConfig) {
+        if (typeof brickConfig.properties !== 'object') {
+          throw (new Error(`incorrect 'properties' object property in bricks[${brickIndex}]`));
+        }
+      }
+
+      if ('publish' in brickConfig) {
+        if (!Array.isArray(brickConfig.publish)) {
+          throw (new Error(`incorrect 'publish' Array property in bricks[${brickIndex}]`));
         } else {
-          const uniqueLinks = [];
-          brickConfig.links.forEach((link, linkIndex) => {
-            if (!('name' in link) || typeof link.name !== 'string') {
-              throw (new Error(`missing/incorrect 'name' string property in bricks[${brickIndex}].links[${linkIndex}]`));
+          const uniquePubNames = [];
+          brickConfig.publish.forEach((pub, pubIndex) => {
+            if (!('topic' in pub) || typeof pub.topic !== 'string') {
+              throw (new Error(`missing/incorrect 'topic' string property in bricks[${brickIndex}].publish[${pubIndex}]`));
             }
 
-            if (uniqueLinks.indexOf(link.name) !== -1) {
-              throw (new Error(`bricks[${brickIndex}].links[${linkIndex}] name '${link.name}' is not unique`));
+            if (uniquePubNames.indexOf(pub.topic) !== -1) {
+              throw (new Error(`publish contract '${pub.topic}' is declared more than once`));
             }
-            uniqueLinks.push(link.name);
+            uniquePubNames.push(pub.topic);
 
-            if ('jobs' in link) {
-              if (!Array.isArray(link.jobs)) {
-                throw (new Error(`incorrect 'jobs' Array property in bricks[${brickIndex}].links[${linkIndex}]`));
-              } else {
-                link.jobs.forEach((job, jobIndex) => {
-                  if ('type' in job &amp;&amp; typeof job.type !== 'string') {
-                    throw (new Error(`incorrect 'type' string property in bricks[${brickIndex}].links[${linkIndex}].jobs[${jobIndex}]`));
-                  }
-
-                  if ('quality' in job &amp;&amp; typeof job.quality !== 'string') {
-                    throw (new Error(`incorrect 'quality' string property in bricks[${brickIndex}].links[${linkIndex}].jobs[${jobIndex}]`));
-                  }
-
-                  if ('except' in job &amp;&amp; typeof job.except !== 'boolean') {
-                    throw (new Error(`incorrect 'except' boolean property in bricks[${brickIndex}].links[${linkIndex}].jobs[${jobIndex}]`));
-                  }
-                });
+            if ('data' in pub) {
+              if (!Array.isArray(pub.data)) {
+                throw (new Error(`incorrect 'data' Array property in bricks[${brickIndex}].publish[${pubIndex}]`));
+              } else if (pub.data.length === 0) {
+                throw (new Error(`empty 'data' Array property in bricks[${brickIndex}].publish[${pubIndex}]`));
               }
             }
           });
         }
       }
 
-      if ('properties' in brickConfig) {
-        if (typeof brickConfig.properties !== 'object') {
-          throw (new Error(`incorrect 'properties' object property in bricks[${brickIndex}]`));
+      if ('subscribe' in brickConfig) {
+        if (!Array.isArray(brickConfig.subscribe)) {
+          throw (new Error(`incorrect 'subscribe' Array property in bricks[${brickIndex}]`));
+        } else {
+          const uniqueSubNames = [];
+          brickConfig.subscribe.forEach((sub, pubIndex) => {
+            if (!('topic' in sub) || typeof sub.topic !== 'string') {
+              throw (new Error(`missing/incorrect 'topic' string property in bricks[${brickIndex}].subscribe[${pubIndex}]`));
+            }
+
+            if (uniqueSubNames.indexOf(sub.topic) !== -1) {
+              throw (new Error(`subscribe contract '${sub.topic}' is declared more than once`));
+            }
+            uniqueSubNames.push(sub.topic);
+
+            if ('data' in sub) {
+              if (!Array.isArray(sub.data)) {
+                throw (new Error(`incorrect 'data' Array property in bricks[${brickIndex}].subscribe[${pubIndex}]`));
+              } else if (sub.data.length === 0) {
+                throw (new Error(`empty 'data' Array property in bricks[${brickIndex}].subscribe[${pubIndex}]`));
+              }
+            }
+          });
         }
       }
     });
   }
 
   /**
-   * Checks whether the context can be sent to the destination brick
-   * @param {Context} context - the context to send
-   * @param {String} destination - the name of the destination Brick
-   * @returns {Boolean}
+   * Get publishing channels of a brick
+   * If data is provided, get only channels where data contract is fulfilled
+   * @param {String} name - name of the brick
+   * @param {Object} [data] - data to be published
+   * @return {Channel[]}
    */
-  canSend(context, destination) {
-    let canSend = false;
-    const source = this.bricks.get(context.from);
-    if ('links' in source.configuration) {
-      const link = source.configuration.links.find((element) => (element.name === destination));
-      if (typeof link !== 'undefined') {
-        if (!('jobs' in link) || link.jobs.length === 0) {
-          canSend = true;
-        } else {
-          canSend = link.jobs.some((jobdefinition) => {
-            let matched = true;
-            matched &amp;= jobdefinition.quality === undefined || jobdefinition.quality === context.data.nature.quality;
-            matched &amp;= jobdefinition.type === undefined || jobdefinition.type === context.data.nature.type;
-            if ('except' in jobdefinition &amp;&amp; jobdefinition.except === true) {
-              return !matched;
-            }
-            return matched;
-          });
-        }
-      }
+  getDestinations(name, data) {
+    if (typeof name !== 'string') {
+      throw (new Error('missing/incorrect \'name\' string property'));
     }
-    return canSend;
+    const results = Array.from(this.channels) // convert Map to [(key, value)] array
+      .map((keyValuePair) => keyValuePair[1]) // map to [value] array
+      .filter((channel) => {
+        let filterCondition = channel.publishers.has(name);
+        if (data !== null &amp;&amp; typeof data === 'object') {
+          filterCondition &amp;= channel.canProduce(name, data);
+        }
+        return filterCondition;
+      });
+    return results;
   }
 
   /**
-   * Send a Context to all the links of the Brick which created it
-   * @param {Context} context - the context to send
+   * Publish a Context using channels
+   * @param {Context} context - the context to publish
    */
-  send(context) {
+  publish(context) {
     const self = this;
     const source = this.bricks.get(context.from);
-    if ('links' in source.configuration) {
-      source.configuration.links.forEach((link) => {
-        if (self.canSend(context, link.name)) {
-          const dest = this.bricks.get(link.name);
-          console.log(`${source.configuration.name}->${link.name} sent: ${JSON.stringify(context.data)}`);
-          dest.instance.onData(context);
-        }
+    if ('publish' in source.configuration) {
+      source.configuration.publish.forEach((publish) => {
+
       });
     }
   }
@@ -232,7 +243,14 @@ exports = module.exports = Cement;
  * @property {String} name - name of the brick instance (should be unique)
  * @property {String} module - path or name of the brick module
  * @property {Object} [properties] - properties to instantiate the brick (see the module definition)
- * @property {LinkConfig[]} [links] - Array of LinkConfig
+ * @property {Contract[]} [publish] - Array of Contract for publishing data
+ * @property {Contract[]} [subscribe] - Array of Contract for subscribing to data
+ */
+
+/**
+ * @typedef {Object} Contract
+ * @property {String} topic - the topic of the data (e.g. channel)
+ * @property {Object[]} data - Array of data definition
  */
 
 /**
@@ -250,13 +268,13 @@ exports = module.exports = Cement;
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-flowcontrol.html">flowcontrol</a></li></ul><h3>Classes</h3><ul><li><a href="Cement.html">Cement</a></li><li><a href="CementHelper.html">CementHelper</a></li><li><a href="Context.html">Context</a></li></ul><h3><a href="global.html">Global</a></h3>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-flowcontrol.html">flowcontrol</a></li></ul><h3>Classes</h3><ul><li><a href="Cement.html">Cement</a></li><li><a href="CementHelper.html">CementHelper</a></li><li><a href="Channel.html">Channel</a></li><li><a href="Context.html">Context</a></li></ul><h3><a href="global.html">Global</a></h3>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Thu Feb 25 2016 11:27:00 GMT+0100 (Romance Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Tue Mar 08 2016 09:31:02 GMT+0100 (Romance Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>
