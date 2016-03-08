@@ -3,8 +3,11 @@ const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 chai.use(chaiAsPromised);
 const expect = chai.expect;
+const sinon = require('sinon');
+require('sinon-as-promised');
 
 const Channel = require('../lib/channel');
+const Context = require('../lib/context');
 
 describe('Channel - instantiate', function() {
   context('when missing/incorrect \'topic\' string property', function() {
@@ -26,31 +29,6 @@ describe('Channel - instantiate', function() {
       done();
     });
   });
-});
-
-describe('Channel - getters', function() {
-  let channel;
-  before(function() {
-    channel = new Channel('some.topic');
-  });
-
-  //describe('get topic', function() {
-  //  it('should return Map of publishers', function() {
-  //    expect(channel.getPublishers()).to.be.deep.equal(channel.publishers);
-  //  })
-  //});
-  //
-  //describe('get publishers', function() {
-  //  it('should return Map of publishers', function() {
-  //    expect(channel.getPublishers()).to.be.deep.equal(channel.publishers);
-  //  })
-  //});
-  //
-  //describe('get subscribers', function() {
-  //  it('should return Map of subscribers', function() {
-  //    expect(channel.getSubscribers()).to.be.deep.equal(channel.subscribers);
-  //  })
-  //});
 });
 
 describe('Channel - add publisher', function() {
@@ -198,7 +176,7 @@ describe('Channel - check publisher can produce data', function() {
   context('when missing/incorrect \'name\' string property', function() {
     it('should throw an error', function() {
       return expect(function() {
-        channel.canProduce();
+        channel.canPublish();
       }).to.throw(Error, 'missing/incorrect \'name\' string property');
     });
   });
@@ -206,20 +184,20 @@ describe('Channel - check publisher can produce data', function() {
   context('when missing/incorrect \'data\' object property', function() {
     it('should throw an error', function() {
       return expect(function() {
-        channel.canProduce('publisher1', '');
+        channel.canPublish('publisher1', '');
       }).to.throw(Error, 'missing/incorrect \'data\' object property');
     });
   });
 
   context('when publisher is not found', function() {
     it('should return true', function() {
-      expect(channel.canProduce('not-publisher1', {})).to.equal(false);
+      expect(channel.canPublish('not-publisher1', {})).to.equal(false);
     });
   });
 
   context('when data contract is fulfilled', function() {
     it('should return true', function() {
-      expect(channel.canProduce('publisher1', {
+      expect(channel.canPublish('publisher1', {
         nature: {
           type: 'foobar',
         },
@@ -227,7 +205,7 @@ describe('Channel - check publisher can produce data', function() {
           foo: 'bar',
         },
       })).to.equal(true);
-      expect(channel.canProduce('publisher1', {
+      expect(channel.canPublish('publisher1', {
         nature: {
           type: 'foobar',
           quality: 'whatever',
@@ -241,7 +219,7 @@ describe('Channel - check publisher can produce data', function() {
 
   context('when data contract is not fulfilled', function() {
     it('should return true', function() {
-      expect(channel.canProduce('publisher1', {
+      expect(channel.canPublish('publisher1', {
         nature: {
           type: 'not-foobar',
         },
@@ -411,6 +389,60 @@ describe('Channel - get subscribers that can consume data', function() {
       });
       expect(subscribers).to.be.an('Array');
       expect(subscribers).to.have.lengthOf(0);
+    });
+  });
+});
+
+describe('Channel - produce data, make subscribers consume', function() {
+  let channel;
+  const name1 = 'subscriber1';
+  const dataContracts1 = [
+    {
+      nature: {
+        type: 'foobar1',
+      },
+    },
+  ];
+  const brick1 = {
+    onData: function(context) {
+      console.log(context);
+    },
+  };
+  const spyOnData1 = sinon.spy(brick1, 'onData');
+  const name2 = 'subscriber2';
+  const dataContracts2 = [
+    {
+      nature: {
+        type: 'foobar2',
+      },
+    },
+  ];
+  const brick2 = {
+    onData: function(context) {
+      console.log(context);
+    },
+  };
+  const spyOnData2 = sinon.spy(brick2, 'onData');
+  before(function() {
+    channel = new Channel('some.topic');
+    channel.addSubscriber(name1, dataContracts1, brick1);
+    channel.addSubscriber(name2, dataContracts2, brick2);
+  });
+
+  context('when subscriber(s) can consume', function() {
+    it(`should call subscribers' brick instance\'s onData method`, function() {
+      const context = new Context({}, {
+        nature: {
+          type: 'foobar1',
+          quality: 'whatever',
+        },
+        payload: {
+          foo: 'bar',
+        },
+      });
+      channel.publish(context);
+      expect(spyOnData1.calledOnce).to.equal(true);
+      expect(spyOnData2.called).to.equal(false);
     });
   });
 });
