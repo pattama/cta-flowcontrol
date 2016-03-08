@@ -43,8 +43,8 @@ describe('CementHelper - create Context', function() {
   });
 });
 
-describe('CementHelper - send Context', function() {
-  it('should call Cement send()', function() {
+describe('CementHelper - publish Context', function() {
+  it('should call Cement publish()', function() {
     const cementHelper = new CementHelper(cement, 'mybrick1');
     const data = {
       id: '001',
@@ -55,8 +55,8 @@ describe('CementHelper - send Context', function() {
       payload: {},
     };
     const context = cementHelper.createContext(data);
-    const spy = sinon.spy(cement, 'send');
-    cementHelper.send(context);
+    const spy = sinon.spy(cement, 'publish');
+    cementHelper.publish(context);
     return expect(spy.calledOnce).to.be.true;
   });
 });

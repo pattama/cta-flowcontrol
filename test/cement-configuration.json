@@ -4,16 +4,25 @@
       "name": "mybrick1",
       "module": "cta-brick",
       "properties": {},
-      "links": [
+      "publish": [
         {
-          "name": "mybrick2",
-          "jobs": [
+          "topic": "topic1",
+          "data": [
             {
-              "quality": "Execution",
-              "type": "CommandLine"
-            },
+              "nature": {
+                "type": "Execution",
+                "quality": "CommandLine"
+              }
+            }
+          ]
+        },
+        {
+          "topic": "topic2",
+          "data": [
             {
-              "quality": "TestStatus"
+              "nature": {
+                "type": "TestStatus"
+              }
             }
           ]
         }
@@ -23,39 +32,40 @@
       "name": "mybrick2",
       "module": "cta-brick",
       "properties": {},
-      "links": [
+      "publish": [
         {
-          "name": "mybrick3",
-          "jobs": [
+          "topic": "topic3",
+          "data": [
             {
-              "quality": "Execution",
-              "except": true
+              "nature": {
+                "type": "Log"
+              }
+            }
+          ]
+        }
+      ],
+      "subscribe": [
+        {
+          "topic": "topic1",
+          "data": [
+            {
+              "nature": {
+                "type": "Execution"
+              }
             }
           ]
         },
         {
-          "name": "mybrick4"
-        },
-        {
-          "name": "mybrick5",
-          "jobs": []
+          "topic": "topic4",
+          "data": [
+            {
+              "nature": {
+                "type": "Execution"
+              }
+            }
+          ]
         }
       ]
-    },
-    {
-      "name": "mybrick3",
-      "module": "cta-brick",
-      "properties": {}
-    },
-    {
-      "name": "mybrick4",
-      "module": "cta-brick",
-      "properties": {}
-    },
-    {
-      "name": "mybrick5",
-      "module": "cta-brick",
-      "properties": {}
     }
   ]
 }
