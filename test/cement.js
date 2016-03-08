@@ -594,49 +594,92 @@ describe('Cement - get publishing channels (e.g. destinations) of a brick', func
           return pub.topic === channel.topic;
         });
         expect(brickHasPubTopic).to.equal(true);
-        expect(channel.canProduce('mybrick1', data)).to.equal(true);
+        expect(channel.canPublish('mybrick1', data)).to.equal(true);
       });
     });
   });
 });
 
+//describe('Cement - publish Context (no channels matching)', function() {
+//  const brick = cement.bricks.get('mybrick1');
+//  const context = brick.cementHelper.createContext({
+//    id: '001',
+//    nature: {
+//      type: 'Execution',
+//      quality: 'CommandLine',
+//    },
+//    payload: {},
+//  });
+//  sinon.stub(cement, 'getDestinations', () => {
+//    return [];
+//  });
+//
+//  it('should retrieve destinations', function() {
+//    return expect(function() {
+//      return context.publish();
+//    }).to.throw(Error, `no publishing channels found for brick ${brick.configuration.name}`);
+//  });
+//
+//  after(function(done) {
+//    cement.getDestinations.restore();
+//    done();
+//  });
+//});
+
 describe('Cement - publish Context', function() {
   const brick = cement.bricks.get('mybrick1');
+  const context = brick.cementHelper.createContext({
+    id: '001',
+    nature: {
+      type: 'Execution',
+      quality: 'CommandLine',
+    },
+    payload: {
+      hello: 'world',
+    },
+  }).on('accept', function onContextAccept(who) {
+    console.log(`${brick.configuration.name}: ${who} accepted`);
+  })
+  .on('reject', function onContextReject(who, reject) {
+    console.log(`${brick.configuration.name}: ${who} rejected with ${reject}`);
+  })
+  .on('done', function onContextReject(who) {
+    console.log(`${brick.configuration.name}: ${who} done`);
+  })
+  .on('error', function onContextReject(who, error) {
+    console.log(`${brick.configuration.name}: ${who} done with error ${error}`);
+  });
+  const destinations = cement.getDestinations(context.from, context.data);
+  const spyChannels = [];
+  destinations.forEach((channel) => {
+    spyChannels.push(sinon.spy(channel, 'publish'));
+  });
   const spyCementHelper = sinon.spy(brick.cementHelper, 'publish');
-  const spyLinks = [];
-  if (brick.configuration.links && Array.isArray(brick.configuration.links)) {
-    brick.configuration.links.forEach(function(link) {
-      spyLinks.push(sinon.spy(cement.bricks.get(link.name).instance, 'onData'));
-    });
-  }
+  const spyCementPublish = sinon.spy(cement, 'publish');
+  const spyCementDestinations = sinon.spy(cement, 'getDestinations');
 
   before(function(done) {
-    brick.cementHelper.createContext({
-      id: '001',
-      nature: {
-        quality: 'Execution',
-        type: 'CommandLine',
-      },
-      payload: {},
-    }).publish();
-    setInterval(done, 2000);
+    context.publish();
+    setInterval(done, 6000);
   });
 
-  it('should call publish() and all linked Bricks onData()', function(done) {
-    expect(spyCementHelper.calledOnce).to.be.equal(true);
-    spyLinks.forEach(function(spyLink) {
-      expect(spyLink.calledOnce).to.be.equal(true);
+  it('should retrieve destinations', function(done) {
+    expect(spyCementHelper.called).to.be.equal(true);
+    expect(spyCementPublish.called).to.be.equal(true);
+    expect(spyCementDestinations.called).to.be.equal(true);
+    spyChannels.forEach((spy) => {
+      expect(spy.calledOnce).to.be.equal(true);
     });
     done();
   });
 
   after(function(done) {
     brick.cementHelper.publish.restore();
-    if (brick.configuration.links && Array.isArray(brick.configuration.links)) {
-      brick.configuration.links.forEach(function(link) {
-        cement.bricks.get(link.name).instance.onData.restore();
-      });
-    }
+    cement.publish.restore();
+    cement.getDestinations.restore();
+    destinations.forEach((channel) => {
+      channel.publish.restore();
+    });
     done();
   });
 });
