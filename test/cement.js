@@ -660,7 +660,7 @@ describe('Cement - publish Context', function() {
 
   before(function(done) {
     context.publish();
-    setInterval(done, 6000);
+    setInterval(done, 2000);
   });
 
   it('should retrieve destinations', function(done) {
