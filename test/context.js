@@ -85,8 +85,8 @@ describe('Context - instantiate', function() {
       const context = new Context(cementHelper, {
         id: '001',
         nature: {
-          quality: 'Execution',
-          type: 'CommandLine',
+          type: 'Execution',
+          quality: 'CommandLine',
         },
         payload: {},
       });
@@ -101,8 +101,8 @@ describe('Context - publish', function() {
     const context = new Context(cementHelper, {
       id: '001',
       nature: {
-        quality: 'Execution',
-        type: 'CommandLine',
+        type: 'Execution',
+        quality: 'CommandLine',
       },
       payload: {},
     });

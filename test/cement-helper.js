@@ -49,8 +49,8 @@ describe('CementHelper - publish Context', function() {
     const data = {
       id: '001',
       nature: {
-        quality: 'Execution',
-        type: 'CommandLine',
+        type: 'Execution',
+        quality: 'CommandLine',
       },
       payload: {},
     };
