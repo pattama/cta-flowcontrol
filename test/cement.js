@@ -395,33 +395,34 @@ describe('Cement - instantiate', function() {
       expect(cement).to.be.an.instanceof(Cement);
       expect(cement).to.have.property('bricks').and.to.be.a('Map');
       expect(cement).to.have.property('channels').and.to.be.a('Map');
-      configuration.bricks.forEach(function(brick) {
-        expect(cement.bricks.has(brick.name)).to.be.equal(true);
-        expect(cement.bricks.get(brick.name)).to.have.property('configuration');
-        expect(cement.bricks.get(brick.name).configuration).to.be.deep.equal(brick);
-        expect(cement.bricks.get(brick.name)).to.have.property('cementHelper').and.to.be.an.instanceof(CementHelper);
-        expect(cement.bricks.get(brick.name)).to.have.property('instance').and.to.be.an.instanceof(require(brick.module));
-        if (Array.isArray(brick.publish)) {
-          brick.publish.forEach(function(pubContract) {
-            expect(cement.channels.has(pubContract.topic)).to.be.equal(true);
-            const channel = cement.channels.get(pubContract.topic);
-            expect(channel.publishers.has(brick.name)).to.be.equal(true);
-            expect(channel.publishers.get(brick.name)).to.have.property('data').and.to.deep.equal(pubContract.data);
-            expect(channel.publishers.get(brick.name)).to.have.property('brick').and.to.be.an.instanceof(require(brick.module));
-          });
-        }
-
-        if (Array.isArray(brick.subscribe)) {
-          brick.subscribe.forEach(function(subContract) {
-            expect(cement.channels.has(subContract.topic)).to.be.equal(true);
-            const channel = cement.channels.get(subContract.topic);
-            expect(channel.subscribers.has(brick.name)).to.be.equal(true);
-            expect(channel.subscribers.get(brick.name)).to.have.property('data').and.to.deep.equal(subContract.data);
-            expect(channel.subscribers.get(brick.name)).to.have.property('brick').and.to.be.an.instanceof(require(brick.module));
-          });
-        }
+      cement.on('initialized', function() {
+        configuration.bricks.forEach(function(brick) {
+          expect(cement.bricks.has(brick.name)).to.be.equal(true);
+          expect(cement.bricks.get(brick.name)).to.have.property('configuration');
+          expect(cement.bricks.get(brick.name).configuration).to.be.deep.equal(brick);
+          expect(cement.bricks.get(brick.name)).to.have.property('cementHelper').and.to.be.an.instanceof(CementHelper);
+          expect(cement.bricks.get(brick.name)).to.have.property('instance').and.to.be.an.instanceof(require(brick.module));
+          if (Array.isArray(brick.publish)) {
+            brick.publish.forEach(function(pubContract) {
+              expect(cement.channels.has(pubContract.topic)).to.be.equal(true, 'cement.channels.has(pubContract.topic)');
+              const channel = cement.channels.get(pubContract.topic);
+              expect(channel.publishers.has(brick.name)).to.be.equal(true);
+              expect(channel.publishers.get(brick.name)).to.have.property('data').and.to.deep.equal(pubContract.data);
+              expect(channel.publishers.get(brick.name)).to.have.property('brick').and.to.be.an.instanceof(require(brick.module));
+            });
+          }
+          if (Array.isArray(brick.subscribe)) {
+            brick.subscribe.forEach(function(subContract) {
+              expect(cement.channels.has(subContract.topic)).to.be.equal(true);
+              const channel = cement.channels.get(subContract.topic);
+              expect(channel.subscribers.has(brick.name)).to.be.equal(true);
+              expect(channel.subscribers.get(brick.name)).to.have.property('data').and.to.deep.equal(subContract.data);
+              expect(channel.subscribers.get(brick.name)).to.have.property('brick').and.to.be.an.instanceof(require(brick.module));
+            });
+          }
+        });
+        done();
       });
-      done();
     });
   });
 });
