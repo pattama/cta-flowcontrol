@@ -395,7 +395,7 @@ describe('Cement - instantiate', function() {
       expect(cement).to.be.an.instanceof(Cement);
       expect(cement).to.have.property('bricks').and.to.be.a('Map');
       expect(cement).to.have.property('channels').and.to.be.a('Map');
-      cement.on('initialized', function() {
+      cement.on('bootstraped', function() {
         configuration.bricks.forEach(function(brick) {
           expect(cement.bricks.has(brick.name)).to.be.equal(true);
           expect(cement.bricks.get(brick.name)).to.have.property('configuration');
