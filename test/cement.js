@@ -424,10 +424,10 @@ describe('Cement - instantiate', function() {
         });
         done();
       };
-      if (cement.bootstraped) {
+      if (cement.bootstrapped) {
         test();
       } else {
-        cement.on('bootstraped', function() {
+        cement.on('bootstrapped', function() {
           test();
         });
       }
