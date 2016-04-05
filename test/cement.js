@@ -396,7 +396,7 @@ describe('Cement - instantiate', function() {
       expect(cement).to.have.property('bricks').and.to.be.a('Map');
       expect(cement).to.have.property('channels').and.to.be.a('Map');
       // TODO improve this
-      function test(){
+      function test() {
         configuration.bricks.forEach(function(brick) {
           expect(cement.bricks.has(brick.name)).to.be.equal(true);
           expect(cement.bricks.get(brick.name)).to.have.property('configuration');
@@ -423,7 +423,7 @@ describe('Cement - instantiate', function() {
           }
         });
         done();
-      };
+      }
       if (cement.bootstrapped) {
         test();
       } else {
