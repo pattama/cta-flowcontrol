@@ -393,6 +393,34 @@ describe('Channel - get subscribers that can consume data', function() {
   });
 });
 
+describe('Channel - produce data, no subscribers can consume', function() {
+  let channel;
+  const context = new Context({}, {
+    nature: {
+      type: 'foobar1',
+      quality: 'whatever',
+    },
+    payload: {
+      foo: 'bar',
+    },
+  });
+  context.on('error', function(who, error) {
+    expect(who).to.be.equal(null);
+    expect(error).to.be.an.instanceOf(Error)
+      .and.to.have.property('message', 'no subscribers consumed the job');
+  });
+  const spyContextEmit = sinon.spy(context, 'emit');
+
+  before(function() {
+    channel = new Channel('some.topic');
+    channel.publish(context);
+  });
+
+  it(`should emit error event`, function() {
+    expect(spyContextEmit.calledWith('error')).to.equal(true);
+  });
+});
+
 describe('Channel - produce data, make subscribers consume', function() {
   let channel;
 
@@ -411,7 +439,7 @@ describe('Channel - produce data, make subscribers consume', function() {
         resolve();
       });
     },
-    onData: function(context) {
+    onData: function() {
       return new Promise((resolve) => {
         resolve();
       });
@@ -435,7 +463,7 @@ describe('Channel - produce data, make subscribers consume', function() {
         reject();
       });
     },
-    onData: function(context) {
+    onData: function() {
       return new Promise((resolve) => {
         resolve();
       });
@@ -455,20 +483,13 @@ describe('Channel - produce data, make subscribers consume', function() {
   ];
   const brick3 = {
     name: 'subscriber3',
-    onData: function(context) {
+    onData: function() {
       return new Promise((resolve) => {
         resolve();
       });
     },
   };
   const spyOnData3 = sinon.spy(brick3, 'onData');
-  before(function() {
-    channel = new Channel('some.topic');
-    channel.addSubscriber(brick1.name, dataContracts1, brick1);
-    channel.addSubscriber(brick2.name, dataContracts2, brick2);
-    channel.addSubscriber(brick3.name, dataContracts3, brick3);
-  });
-
   const context = new Context({}, {
     nature: {
       type: 'foobar1',
@@ -479,9 +500,15 @@ describe('Channel - produce data, make subscribers consume', function() {
     },
   });
   const spyContextEmit = sinon.spy(context, 'emit');
+  before(function() {
+    channel = new Channel('some.topic');
+    channel.addSubscriber(brick1.name, dataContracts1, brick1);
+    channel.addSubscriber(brick2.name, dataContracts2, brick2);
+    channel.addSubscriber(brick3.name, dataContracts3, brick3);
+    channel.publish(context);
+  });
 
   it(`should call subscribers' brick instance\'s validate and onData method`, function(done) {
-    channel.publish(context);
     setTimeout(() => { // workaround to spy promises chain
       expect(spyValidate1.calledOnce).to.equal(true);
       expect(spyContextEmit.calledWithExactly('accept', brick1.name)).to.equal(true);
