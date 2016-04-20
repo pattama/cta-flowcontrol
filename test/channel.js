@@ -407,7 +407,7 @@ describe('Channel - produce data, no subscribers can consume', function() {
   context.on('error', function(who, error) {
     expect(who).to.be.equal(null);
     expect(error).to.be.an.instanceOf(Error)
-      .and.to.have.property('message', 'no subscribers consumed the job');
+      .and.to.have.property('message', 'no brick is subscribed to consume the job');
   });
   const spyContextEmit = sinon.spy(context, 'emit');
 
