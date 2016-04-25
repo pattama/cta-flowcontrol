@@ -511,7 +511,7 @@ describe('Channel - produce data, make subscribers consume', function() {
   it(`should call subscribers' brick instance\'s validate and onData method`, function(done) {
     setTimeout(() => { // workaround to spy promises chain
       expect(spyValidate1.calledOnce).to.equal(true);
-      expect(spyContextEmit.calledWithExactly('accept', brick1.name)).to.equal(true);
+      expect(spyContextEmit.calledWithExactly('accept', brick1.name, context.data)).to.equal(true);
       expect(spyOnData1.calledOnce).to.equal(true);
       expect(spyValidate2.calledOnce).to.equal(true);
       expect(spyContextEmit.calledWithExactly('reject', brick2.name, validationError)).to.equal(true);

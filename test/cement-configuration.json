@@ -72,6 +72,14 @@
       "name": "mybrick3",
       "module": "cta-brick",
       "properties": {},
+      "publish": [
+        {
+          "topic": "end.of.the.world",
+          "data": [
+            {}
+          ]
+        }
+      ],
       "subscribe": [
         {
           "topic": "mybrick3.exec.cmdline",
