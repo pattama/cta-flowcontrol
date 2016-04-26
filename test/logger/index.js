@@ -27,8 +27,10 @@ describe('logger', function() {
     const config = require('./config');
     const logFile = os.tmpDir() + path.sep + 'cta-flowcontrol-' + Date.now() + '.log';
     config.logger = {
-      filename: logFile,
-      level: 'debug',
+      properties: {
+        filename: logFile,
+        level: 'debug',
+      },
     };
     const cement = new Cement(config);
     setTimeout(function() {
