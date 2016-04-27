@@ -1,31 +1,35 @@
 'use strict';
 const assert = require('chai').assert;
-const os = require('os');
 const path = require('path');
 const fs = require('fs');
+const logFile = __dirname + path.sep + 'cta-flowcontrol.log';
 
 describe('logger', function() {
-  it('cement with default logger config', function(done) {
-    const Cement = require('../../lib/cement');
-    const config = require('./config');
-    const cement = new Cement(config);
-    // default cement log filename
-    const logFile = os.tmpDir() + path.sep + 'cta-flowcontrol.log';
-    setTimeout(function() {
-      fs.readFile(logFile, 'utf8', (err, data) => {
-        if (err) {
-          done(err);
-        }
-        const str = new Date().toISOString().substring(0, 16);
-        assert(data.indexOf(str) !== -1);
+  before(function(done) {
+    try {
+      fs.unlink(logFile, function() {
         done();
       });
-    }, 500);
+    } catch (e) {
+      done();
+    }
+  });
+  it('cement with default logger config', function(done) {
+    try {
+      const Cement = require('../../lib/cement');
+      const config = require('./config');
+      const cement = new Cement(config);
+      // default cement log filename
+      assert(cement.logger);
+      assert(cement.logger.info);
+      done();
+    } catch (e) {
+      done(e);
+    }
   });
   it('cement with custom logger config', function(done) {
     const Cement = require('../../lib/cement');
     const config = require('./config');
-    const logFile = os.tmpDir() + path.sep + 'cta-flowcontrol-' + Date.now() + '.log';
     config.logger = {
       properties: {
         filename: logFile,
@@ -33,6 +37,7 @@ describe('logger', function() {
       },
     };
     const cement = new Cement(config);
+    cement.logger.info('Hi there');
     setTimeout(function() {
       fs.readFile(logFile, 'utf8', (err, data) => {
         if (err) {

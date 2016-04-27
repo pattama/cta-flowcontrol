@@ -62,14 +62,19 @@ describe('CementHelper - publish Context', function() {
 });
 
 describe('CementHelper - logger', function() {
-  it('should have logger instance as property', function() {
-    const logger = {
-      info: function(text) {
-        console.log(text);
-      },
-    };
-    const cementHelper = new CementHelper(cement, 'mybrick1', logger);
-    expect(cementHelper).to.have.property('logger');
-    cementHelper.logger.info('Hi there!');
+  it('should have logger instance as property', function(done) {
+    try {
+      const logger = {
+        info: function() {
+          return;
+        },
+      };
+      const cementHelper = new CementHelper(cement, 'mybrick1', logger);
+      expect(cementHelper).to.have.property('logger');
+      cementHelper.logger.info('Hi there!');
+      done();
+    } catch (e) {
+      done(e);
+    }
   });
 });
