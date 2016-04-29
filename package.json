@@ -36,7 +36,8 @@
     "sinon-as-promised": "^4.0.0"
   },
   "sourceDependencies": {
-    "cta-brick": "*"
+    "cta-brick": "*",
+    "cta-logger": "*"
   },
   "scripts": {
     "test": "_mocha test/index.js",

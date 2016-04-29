@@ -60,3 +60,21 @@ describe('CementHelper - publish Context', function() {
     return expect(spy.calledOnce).to.be.true;
   });
 });
+
+describe('CementHelper - logger', function() {
+  it('should have logger instance as property', function(done) {
+    try {
+      const logger = {
+        info: function() {
+          return;
+        },
+      };
+      const cementHelper = new CementHelper(cement, 'mybrick1', logger);
+      expect(cementHelper).to.have.property('logger');
+      cementHelper.logger.info('Hi there!');
+      done();
+    } catch (e) {
+      done(e);
+    }
+  });
+});
