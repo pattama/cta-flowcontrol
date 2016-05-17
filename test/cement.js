@@ -669,7 +669,7 @@ describe('Cement - publish Context', function() {
 
   before(function(done) {
     context.publish();
-    setInterval(done, 2000);
+    setTimeout(done, 2000);
   });
 
   it('should retrieve destinations', function(done) {
