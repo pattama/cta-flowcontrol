@@ -439,14 +439,14 @@ describe('Channel - produce data, make subscribers consume', function() {
         resolve();
       });
     },
-    onData: function() {
+    process: function() {
       return new Promise((resolve) => {
         resolve();
       });
     },
   };
   const spyValidate1 = sinon.stub(brick1, 'validate').resolves({ok: 1});
-  const spyOnData1 = sinon.spy(brick1, 'onData');
+  const spyprocess1 = sinon.spy(brick1, 'process');
 
   // brick2 : contract OK. validation NOK.
   const dataContracts2 = [
@@ -463,7 +463,7 @@ describe('Channel - produce data, make subscribers consume', function() {
         reject();
       });
     },
-    onData: function() {
+    process: function() {
       return new Promise((resolve) => {
         resolve();
       });
@@ -471,7 +471,7 @@ describe('Channel - produce data, make subscribers consume', function() {
   };
   const validationError = new Error('mock validation error');
   const spyValidate2 = sinon.stub(brick2, 'validate').rejects(validationError);
-  const spyOnData2 = sinon.spy(brick2, 'onData');
+  const spyprocess2 = sinon.spy(brick2, 'process');
 
   // brick3 : contract NOK.
   const dataContracts3 = [
@@ -483,13 +483,13 @@ describe('Channel - produce data, make subscribers consume', function() {
   ];
   const brick3 = {
     name: 'subscriber3',
-    onData: function() {
+    process: function() {
       return new Promise((resolve) => {
         resolve();
       });
     },
   };
-  const spyOnData3 = sinon.spy(brick3, 'onData');
+  const spyprocess3 = sinon.spy(brick3, 'process');
   const context = new Context({}, {
     nature: {
       type: 'foobar1',
@@ -508,15 +508,15 @@ describe('Channel - produce data, make subscribers consume', function() {
     channel.publish(context);
   });
 
-  it(`should call subscribers' brick instance\'s validate and onData method`, function(done) {
+  it(`should call subscribers' brick instance\'s validate and process method`, function(done) {
     setTimeout(() => { // workaround to spy promises chain
       expect(spyValidate1.calledOnce).to.equal(true);
       expect(spyContextEmit.calledWithExactly('accept', brick1.name, context.data)).to.equal(true);
-      expect(spyOnData1.calledOnce).to.equal(true);
+      expect(spyprocess1.calledOnce).to.equal(true);
       expect(spyValidate2.calledOnce).to.equal(true);
       expect(spyContextEmit.calledWithExactly('reject', brick2.name, validationError)).to.equal(true);
-      expect(spyOnData2.called).to.equal(false);
-      expect(spyOnData3.called).to.equal(false);
+      expect(spyprocess2.called).to.equal(false);
+      expect(spyprocess3.called).to.equal(false);
       done();
     }, 1000);
   });
