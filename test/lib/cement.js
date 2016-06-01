@@ -8,8 +8,8 @@ const proxyquire = require('proxyquire');
 const sinon = require('sinon');
 require('sinon-as-promised');
 
-const Cement = require('../lib/cement');
-const CementHelper = require('../lib/cement-helper');
+const Cement = require('../../lib/cement');
+const CementHelper = require('../../lib/cementhelper');
 const configuration = require('./cement-configuration.json');
 
 const cement = new Cement(configuration);
@@ -321,17 +321,17 @@ describe('Cement - instantiate', function() {
       let StubCement;
       const stubError = new Error('CementHelper stubbed');
       before(function() {
-        mockrequire('../lib/cement-helper', function() {
+        mockrequire('../../lib/cementhelper', function() {
           throw stubError;
         });
-        const StubCementHelper = require('../lib/cement-helper');
-        StubCement = proxyquire('../lib/cement', {
+        const StubCementHelper = require('../../lib/cementhelper');
+        StubCement = proxyquire('../../lib/cement', {
           CementHelper: StubCementHelper,
         });
       });
 
       after(function() {
-        mockrequire.stop('../lib/cement-helper');
+        mockrequire.stop('../../lib/cementhelper');
       });
 
       it('should throw an error', function() {
@@ -435,131 +435,6 @@ describe('Cement - instantiate', function() {
   });
 });
 
-//describe('Cement - access control list', function() {
-//  const brickOne = cement.bricks.get('mybrick1');
-//  const brickTwo = cement.bricks.get('mybrick2');
-//
-//  context('when job is permitted (case #1 - strict quality, strict type)', function() {
-//    it('should return true', function() {
-//      const context = brickOne.cementHelper.createContext({
-//        id: '001',
-//        nature: {
-//          quality: 'Execution',
-//          type: 'CommandLine',
-//        },
-//        payload: {},
-//      });
-//      const canSend = cement.canSend(context, 'mybrick2');
-//      expect(canSend).to.be.equal(true);
-//    });
-//  });
-//
-//  context('when job is permitted (case #2 - strict quality, whatever type)', function() {
-//    it('should return true', function() {
-//      const context = brickOne.cementHelper.createContext({
-//        id: '001',
-//        nature: {
-//          quality: 'TestStatus',
-//          type: 'foo',
-//        },
-//        payload: {},
-//      });
-//      const canSend = cement.canSend(context, 'mybrick2');
-//      expect(canSend).to.be.equal(true);
-//    });
-//  });
-//
-//  context('when job is permitted (case #3 - all except one quality)', function() {
-//    it('should return true', function() {
-//      const context = brickTwo.cementHelper.createContext({
-//        id: '001',
-//        nature: {
-//          quality: 'foo',
-//          type: 'bar',
-//        },
-//        payload: {},
-//      });
-//      const canSend = cement.canSend(context, 'mybrick3');
-//      expect(canSend).to.be.equal(true);
-//    });
-//  });
-//
-//  context('when job is permitted (case #4 - all (undefined jobs Array))', function() {
-//    it('should return true', function() {
-//      const context = brickTwo.cementHelper.createContext({
-//        id: '001',
-//        nature: {
-//          quality: 'foo',
-//          type: 'bar',
-//        },
-//        payload: {},
-//      });
-//      const canSend = cement.canSend(context, 'mybrick4');
-//      expect(canSend).to.be.equal(true);
-//    });
-//  });
-//
-//  context('when job is permitted (case #5 - all (empty jobs Array))', function() {
-//    it('should return true', function() {
-//      const context = brickTwo.cementHelper.createContext({
-//        id: '001',
-//        nature: {
-//          quality: 'foo',
-//          type: 'bar',
-//        },
-//        payload: {},
-//      });
-//      const canSend = cement.canSend(context, 'mybrick5');
-//      expect(canSend).to.be.equal(true);
-//    });
-//  });
-//
-//  context('when job is denied (case #1 - link not defined)', function() {
-//    it('should return true', function() {
-//      const context = brickOne.cementHelper.createContext({
-//        id: '001',
-//        nature: {
-//          quality: 'Execution',
-//          type: 'CommandLine',
-//        },
-//        payload: {},
-//      });
-//      const canSend = cement.canSend(context, 'mybrick3');
-//      expect(canSend).to.be.equal(false);
-//    });
-//  });
-//
-//  context('when job is denied (case #2 - strict quality, strict type)', function() {
-//    it('should return false', function() {
-//      const context = brickOne.cementHelper.createContext({
-//        id: '001',
-//        nature: {
-//          quality: 'Result',
-//          type: 'CommandLine',
-//        },
-//        payload: {},
-//      });
-//      const canSend = cement.canSend(context, 'mybrick2');
-//      expect(canSend).to.be.equal(false);
-//    });
-//  });
-//
-//  context('when job is denied (case #3 - all except one quality)', function() {
-//    it('should return false', function() {
-//      const context = brickTwo.cementHelper.createContext({
-//        id: '001',
-//        nature: {
-//          quality: 'Execution',
-//          type: 'foo',
-//        },
-//        payload: {},
-//      });
-//      const canSend = cement.canSend(context, 'mybrick3');
-//      expect(canSend).to.be.equal(false);
-//    });
-//  });
-//});
-
 describe('Cement - get publishing channels (e.g. destinations) of a brick', function() {
   const brick = cement.bricks.get('mybrick1');
 
@@ -609,65 +484,76 @@ describe('Cement - get publishing channels (e.g. destinations) of a brick', func
   });
 });
 
-//describe('Cement - publish Context (no channels matching)', function() {
-//  const brick = cement.bricks.get('mybrick1');
-//  const context = brick.cementHelper.createContext({
-//    id: '001',
-//    nature: {
-//      type: 'Execution',
-//      quality: 'CommandLine',
-//    },
-//    payload: {},
-//  });
-//  sinon.stub(cement, 'getDestinations', () => {
-//    return [];
-//  });
-//
-//  it('should retrieve destinations', function() {
-//    return expect(function() {
-//      return context.publish();
-//    }).to.throw(Error, `no publishing channels found for brick ${brick.configuration.name}`);
-//  });
-//
-//  after(function(done) {
-//    cement.getDestinations.restore();
-//    done();
-//  });
-//});
+describe('Cement - publish Context (no channels matching)', function() {
+  let brick;
+  let context;
+  before(function(done) {
+    brick = cement.bricks.get('mybrick1');
+    context = brick.cementHelper.createContext({
+      id: '001',
+      nature: {
+        type: 'Execution',
+        quality: 'CommandLine',
+      },
+      payload: {},
+    });
+    sinon.stub(cement, 'getDestinations', () => {
+      return [];
+    });
+    setTimeout(done, 2000);
+  });
+
+  it('throw an error', function() {
+    return expect(function() {
+      return context.publish();
+    }).to.throw(Error, `no publishing channels found for brick ${brick.configuration.name}`);
+  });
+
+  after(function(done) {
+    cement.getDestinations.restore();
+    done();
+  });
+});
 
 describe('Cement - publish Context', function() {
-  const brick = cement.bricks.get('mybrick1');
-  const context = brick.cementHelper.createContext({
-    id: '001',
-    nature: {
-      type: 'Execution',
-      quality: 'CommandLine',
-    },
-    payload: {
-      hello: 'world',
-    },
-  }).on('accept', function onContextAccept(who) {
-    console.log(`${brick.configuration.name}: ${who} accepted`);
-  })
-  .on('reject', function onContextReject(who, reject) {
-    console.log(`${brick.configuration.name}: ${who} rejected with ${reject}`);
-  })
-  .on('done', function onContextReject(who) {
-    console.log(`${brick.configuration.name}: ${who} done`);
-  })
-  .on('error', function onContextReject(who, error) {
-    console.log(`${brick.configuration.name}: ${who} done with error ${error}`);
-  });
-  const destinations = cement.getDestinations(context.from, context.data);
-  const spyChannels = [];
-  destinations.forEach((channel) => {
-    spyChannels.push(sinon.spy(channel, 'publish'));
-  });
-  const spyCementHelper = sinon.spy(brick.cementHelper, 'publish');
-  const spyCementPublish = sinon.spy(cement, 'publish');
-  const spyCementDestinations = sinon.spy(cement, 'getDestinations');
-
+  let brick;
+  let context;
+  let destinations;
+  let spyChannels;
+  let spyCementHelper;
+  let spyCementPublish;
+  let spyCementDestinations;
   before(function(done) {
+    brick = cement.bricks.get('mybrick1');
+    context = brick.cementHelper.createContext({
+      id: '001',
+      nature: {
+        type: 'Execution',
+        quality: 'CommandLine',
+      },
+      payload: {
+        hello: 'world',
+      },
+    }).on('accept', function onContextAccept(who) {
+      console.log(`${brick.configuration.name}: ${who} accepted`);
+    })
+      .on('reject', function onContextReject(who, reject) {
+        console.log(`${brick.configuration.name}: ${who} rejected with ${reject}`);
+      })
+      .on('done', function onContextReject(who) {
+        console.log(`${brick.configuration.name}: ${who} done`);
+      })
+      .on('error', function onContextReject(who, error) {
+        console.log(`${brick.configuration.name}: ${who} done with error ${error}`);
+      });
+    destinations = cement.getDestinations(context.from, context.data);
+    spyChannels = [];
+    destinations.forEach((channel) => {
+      spyChannels.push(sinon.spy(channel, 'publish'));
+    });
+    spyCementHelper = sinon.spy(brick.cementHelper, 'publish');
+    spyCementPublish = sinon.spy(cement, 'publish');
+    spyCementDestinations = sinon.spy(cement, 'getDestinations');
     context.publish();
     setTimeout(done, 2000);
   });

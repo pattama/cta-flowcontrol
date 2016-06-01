@@ -6,9 +6,9 @@ const expect = chai.expect;
 const sinon = require('sinon');
 require('sinon-as-promised');
 
-const CementHelper = require('../lib/cement-helper');
-const Cement = require('../lib/cement');
-const Context = require('../lib/context');
+const CementHelper = require('../../lib/cementhelper');
+const Cement = require('../../lib/cement');
+const Context = require('../../lib/context');
 const configuration = require('./cement-configuration.json');
 
 const cement = new Cement(configuration);

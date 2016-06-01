@@ -6,8 +6,8 @@ const expect = chai.expect;
 const sinon = require('sinon');
 require('sinon-as-promised');
 
-const Channel = require('../lib/channel');
-const Context = require('../lib/context');
+const Channel = require('../../lib/channel');
+const Context = require('../../lib/context');
 
 describe('Channel - instantiate', function() {
   context('when missing/incorrect \'topic\' string property', function() {
