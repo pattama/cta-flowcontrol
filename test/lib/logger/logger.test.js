@@ -17,7 +17,7 @@ describe('logger', function() {
   it('cement with default logger config', function(done) {
     try {
       const Cement = require('../../../lib/cement');
-      const config = require('./config');
+      const config = require('./config.testdata.js');
       const cement = new Cement(config);
       // default cement log filename
       assert(cement.logger);
@@ -29,7 +29,7 @@ describe('logger', function() {
   });
   it('cement with custom logger config', function(done) {
     const Cement = require('../../../lib/cement');
-    const config = require('./config');
+    const config = require('./config.testdata');
     config.logger = {
       properties: {
         filename: logFile,

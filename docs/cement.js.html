@@ -27,30 +27,45 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>'use strict';
-const CementHelper = require('./cement-helper');
+
+const events = require('events');
+const EventEmitter = events.EventEmitter;
+const CementHelper = require('./cementhelper');
 const Channel = require('./channel');
+const logger = require('./logger');
 
 /**
  * Cement class
  * @class
  * @property {Map&lt;CementBrick>} bricks - Map of a CementBrick
  */
-class Cement {
+class Cement extends EventEmitter {
   /**
    * Creates a new Cement instance
    * @constructs Cement
    * @param {CementConfig} configuration - configuration object for instantiating a new Cement
    */
   constructor(configuration) {
+    super();
+    const that = this;
+
+    // first, instantiate cement logger in case of dirty outputs
+    that.logger = logger(configuration.logger, 'Cement');
+
     this.validate(configuration);
 
     // Instantiating all Bricks
+    this.bootstrapped = false; // set to true when all bricks are initialized &amp; cement bootstrapped
+    this.initializedBricks = 0; // total number of initialized bricks
+    this.configuration = configuration;
     this.bricks = new Map();
     this.channels = new Map();
     configuration.bricks.forEach((brickConfig, brickIndex) => {
       let cementHelper;
+      let brickLogger;
       try {
-        cementHelper = new CementHelper(this, brickConfig.name);
+        brickLogger = logger(brickConfig.logger || configuration.logger, brickConfig.name);
+        cementHelper = new CementHelper(this, brickConfig.name, brickLogger);
       } catch (error) {
         throw (new Error(`failed to instantiate new cementHelper in bricks[${brickIndex}]: ${error}`));
       }
@@ -69,29 +84,63 @@ class Cement {
         throw (new Error(`failed to instantiate new '${brickConfig.module}' in bricks[${brickIndex}]: ${error}`));
       }
 
+      BrickInstance.init();
+
+      BrickInstance.on('initialized', function() {
+        that.logger.info(`Brick ${brickConfig.name} initialized`);
+        that.initializedBricks++;
+        if (that.initializedBricks === configuration.bricks.length) {
+          that.logger.info('All Bricks are initialized');
+          that.bootstrap();
+          that.bootstrapped = true;
+          that.emit('bootstrapped');
+          that.start();
+        }
+      });
+
       this.bricks.set(brickConfig.name, {
         configuration: brickConfig,
         cementHelper: cementHelper,
         instance: BrickInstance,
       });
+    });
+  }
 
+  /**
+   * Bootstraps the cement,
+   * should be called after all bricks are initialized
+   * */
+  bootstrap() {
+    const that = this;
+    that.configuration.bricks.forEach((brickConfig, brickIndex) => {
       if (Array.isArray(brickConfig.publish)) {
         brickConfig.publish.forEach((pubContract) => {
-          if (!this.channels.has(pubContract.topic)) {
-            this.channels.set(pubContract.topic, new Channel(pubContract.topic));
+          if (!that.channels.has(pubContract.topic)) {
+            that.channels.set(pubContract.topic, new Channel(pubContract.topic));
           }
-          this.channels.get(pubContract.topic).addPublisher(brickConfig.name, pubContract.data, BrickInstance);
+          that.channels.get(pubContract.topic).addPublisher(brickConfig.name, pubContract.data, that.bricks.get(brickConfig.name).instance);
         });
       }
 
       if (Array.isArray(brickConfig.subscribe)) {
         brickConfig.subscribe.forEach((subContract) => {
-          if (!this.channels.has(subContract.topic)) {
-            this.channels.set(subContract.topic, new Channel(subContract.topic));
+          if (!that.channels.has(subContract.topic)) {
+            that.channels.set(subContract.topic, new Channel(subContract.topic));
           }
-          this.channels.get(subContract.topic).addSubscriber(brickConfig.name, subContract.data, BrickInstance);
+          that.channels.get(subContract.topic).addSubscriber(brickConfig.name, subContract.data, that.bricks.get(brickConfig.name).instance);
         });
       }
+    });
+  }
+
+  /**
+   * Start bricks, to use cement features
+   * Should be called after the cement is bootstrapped
+   * */
+  start() {
+    const that = this;
+    that.bricks.forEach((brick) => {
+      brick.instance.start();
     });
   }
 
@@ -195,7 +244,7 @@ class Cement {
       .filter((channel) => {
         let filterCondition = channel.publishers.has(name);
         if (data !== null &amp;&amp; typeof data === 'object') {
-          filterCondition &amp;= channel.canProduce(name, data);
+          filterCondition &amp;= channel.canPublish(name, data);
         }
         return filterCondition;
       });
@@ -206,12 +255,29 @@ class Cement {
    * Publish a Context using channels
    * @param {Context} context - the context to publish
    */
-  publish(context) {
-    const self = this;
-    const source = this.bricks.get(context.from);
-    if ('publish' in source.configuration) {
-      source.configuration.publish.forEach((publish) => {
 
+  // make sure to call "publish" method only when the cement is bootstrapped
+  // for test case "CementHelper - publish Context" to succeed
+
+  publish(context) {
+    const that = this;
+    if (that.bootstrapped === true) {
+      that._publish(context);
+    } else {
+      that.on('bootstrapped', function() {
+        that._publish(context);
+      });
+    }
+  }
+
+  _publish(context) {
+    const that = this;
+    const destinations = that.getDestinations(context.from, context.data);
+    if (destinations.length === 0) {
+      throw new Error(`no publishing channels found for brick ${context.from}`);
+    } else {
+      destinations.forEach((channel) => {
+        channel.publish(context);
       });
     }
   }
@@ -274,7 +340,7 @@ exports = module.exports = Cement;
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Tue Mar 08 2016 09:31:02 GMT+0100 (Romance Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Thu Jun 02 2016 10:41:25 GMT+0200 (Romance Daylight Time)
 </footer>
 
 <script> prettyPrint(); </script>
