@@ -18,29 +18,22 @@ describe('config', function() {
   it('should merge config files', function() {
     const conf = config(path.resolve(__dirname, 'config.testdata'));
     assert.deepEqual(conf, {
-      a: {
-        a1: 'a1',
-        a2: 'a2',
+      logger: {
+        module: 'cta-logger',
+        properties: {
+          level: 'debug',
+        },
       },
-      b: [
+      bricks: [
         {
-          name: 'b1',
-          b11: 'b11',
-          b12: 'b12',
+          name: 'a',
+          module: 'cta-brick',
         },
         {
-          name: 'b2',
-          b21: 'b21',
-          b22: 'b22',
-          b23: 'b23',
+          name: 'b',
+          module: 'cta-brick',
         },
       ],
-      c: {
-        c1: ['c11', 'c12'],
-        c2: {
-          c21: 'c21',
-        },
-      },
     });
   });
 });

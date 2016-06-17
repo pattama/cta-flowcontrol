@@ -7,6 +7,7 @@ const mockrequire = require('mock-require');
 const proxyquire = require('proxyquire');
 const sinon = require('sinon');
 require('sinon-as-promised');
+const path = require('path');
 
 const Cement = require('../../lib/cement');
 const CementHelper = require('../../lib/cementhelper');
@@ -16,6 +17,15 @@ const cement = new Cement(configuration);
 
 describe('Cement - instantiate', function() {
   describe('validating core fields', function() {
+    context('when passed configuration is a path', function() {
+      it('should load configuration from this path', function() {
+        const confPath = path.join(__dirname, 'config.testdata');
+        const c = new Cement(confPath);
+        expect(c.configuration).to.include.keys('logger');
+        expect(c.configuration).to.include.keys('bricks');
+      });
+    });
+
     context('when bricks is not an Array', function() {
       it('should throw an error', function() {
         return expect(function() {
