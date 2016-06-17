@@ -16,7 +16,7 @@ describe('config', function() {
   });
 
   it('should merge config files', function() {
-    const conf = config(path.resolve(__dirname, 'config.testdata'));
+    const conf = config(path.join(__dirname, 'config.testdata'));
     assert.deepEqual(conf, {
       logger: {
         module: 'cta-logger',
