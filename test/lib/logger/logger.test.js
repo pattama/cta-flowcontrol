@@ -2,7 +2,8 @@
 const assert = require('chai').assert;
 const path = require('path');
 const fs = require('fs');
-const logFile = __dirname + path.sep + 'cta-flowcontrol.log';
+const os = require('os');
+const logFile = os.tmpDir() + path.sep + 'cta-custom-flowcontrol.log';
 
 describe('logger', function() {
   before(function(done) {
