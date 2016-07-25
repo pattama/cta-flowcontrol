@@ -30,12 +30,14 @@ describe('logger', function() {
   it('cement with custom logger config', function(done) {
     const Cement = require('../../../lib/cement');
     const config = require('./config.testdata');
-    config.logger = {
+    config.tools = [{
+      name: 'logger',
+      module: 'cta-logger',
       properties: {
         filename: logFile,
         level: 'debug',
       },
-    };
+    }];
     const cement = new Cement(config);
     cement.logger.info('Hi there');
     setTimeout(function() {

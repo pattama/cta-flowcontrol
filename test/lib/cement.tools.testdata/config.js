@@ -1,14 +1,15 @@
 'use strict';
 
 module.exports = {
-  modules: [{
+  tools: [{
     name: 'logger',
     module: 'cta-logger',
     properties: {},
+    global: true,
   }, {
     name: 'messaging',
     module: 'cta-messaging',
-    dependencies: ['logger'],
+    singleton: true,
     properties: {
       provider: 'rabbitmq',
       parameters: {
@@ -18,7 +19,7 @@ module.exports = {
   }, {
     name: 'healthCheck',
     module: 'cta-healthcheck',
-    dependencies: ['logger', 'messaging'],
+    dependencies: ['messaging'],
     properties: {
       port: 8080,
     },

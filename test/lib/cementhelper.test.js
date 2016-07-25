@@ -77,7 +77,7 @@ describe('CementHelper - dependencies', function() {
   });
 });
 
-describe('CementHelper - health', function() {
+/*describe('CementHelper - health', function() {
   it('should pull up health to cement', function(done) {
     const cementHelper = new CementHelper(cement, 'mybrick1');
     const health = sinon.spy(cement, 'health');
@@ -85,4 +85,4 @@ describe('CementHelper - health', function() {
     sinon.assert.calledWith(health, 'mybrick1', {});
     done();
   });
-});
+});*/
