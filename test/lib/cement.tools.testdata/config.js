@@ -9,25 +9,26 @@ module.exports = {
   }, {
     name: 'messaging',
     module: 'cta-messaging',
-    singleton: true,
     properties: {
       provider: 'rabbitmq',
       parameters: {
         url: 'amqp://localhost?heartbeat=60',
+        newInstance: true,
       },
     },
   }, {
-    name: 'healthCheck',
+    name: 'healthcheck',
     module: 'cta-healthcheck',
     dependencies: ['messaging'],
     properties: {
-      port: 8080,
+      port: 8090,
+      newInstance: true,
     },
   }],
   bricks: [{
     name: 'one',
     module: 'cta-brick',
-    dependencies: ['logger', 'messaging', 'healthCheck'],
+    dependencies: ['messaging'],
     properties: {},
     publish: [{
       topic: 'topics.com',
@@ -36,8 +37,8 @@ module.exports = {
   }, {
     name: 'two',
     module: 'cta-brick',
-    dependencies: ['logger'],
     properties: {},
+    dependencies: ['healthcheck'],
     subscribe: [{
       topic: 'topics.com',
       data: [{}],
@@ -45,7 +46,7 @@ module.exports = {
   }, {
     name: 'three',
     module: 'cta-brick',
-    dependencies: ['healthCheck'],
+    dependencies: ['messaging', 'healthcheck'],
     properties: {},
     subscribe: [{
       topic: 'topics.com',
