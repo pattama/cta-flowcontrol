@@ -8,6 +8,7 @@ module.exports = {
   }, {
     name: 'messaging',
     module: 'cta-messaging',
+    dependencies: ['logger'],
     properties: {
       provider: 'rabbitmq',
       parameters: {
@@ -17,10 +18,10 @@ module.exports = {
   }, {
     name: 'healthCheck',
     module: 'cta-healthcheck',
+    dependencies: ['logger', 'messaging'],
     properties: {
       port: 8080,
     },
-    dependencies: ['messaging'],
   }],
   bricks: [{
     name: 'one',

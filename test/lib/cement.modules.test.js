@@ -14,7 +14,18 @@ describe('cement modules loader', () => {
     assert.property(cement.modules, 'messaging');
     assert.property(cement.modules, 'healthCheck');
   });
-  it('should inject modules into bricks', () => {
+  it('should inject modules dependencies', () => {
+    const messaging = cement.modules.messaging;
+    const healthCheck = cement.modules.healthCheck;
+
+    assert.property(messaging, 'dependencies');
+    assert.property(messaging.dependencies, 'logger');
+
+    assert.property(healthCheck, 'dependencies');
+    assert.property(healthCheck.dependencies, 'logger');
+    assert.property(healthCheck.dependencies, 'messaging');
+  });
+  it('should inject bricks dependencies', () => {
     const one = cement.bricks.get('one').instance;
     const two = cement.bricks.get('two').instance;
     const three = cement.bricks.get('three').instance;
