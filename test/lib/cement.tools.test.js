@@ -41,18 +41,18 @@ describe('cement tools loader', () => {
 
     assert.property(one.cementHelper, 'dependencies');
     assert.property(one.cementHelper.dependencies, 'logger'); // global dependency
-    assert.property(one.cementHelper.dependencies, 'messaging');
+    assert.property(one.cementHelper.dependencies, 'messagingOne');
     assert.notProperty(one.cementHelper.dependencies, 'healthcheck');
 
     assert.property(two.cementHelper, 'dependencies');
     assert.property(two.cementHelper.dependencies, 'logger'); // global dependency
     assert.notProperty(two.cementHelper.dependencies, 'messaging');
-    assert.property(two.cementHelper.dependencies, 'healthcheck');
+    assert.property(two.cementHelper.dependencies, 'healthCheckTwo');
 
     assert.property(three.cementHelper, 'dependencies');
     assert.property(three.cementHelper.dependencies, 'logger'); // global dependency
-    assert.property(three.cementHelper.dependencies, 'messaging');
-    assert.property(three.cementHelper.dependencies, 'healthcheck');
+    assert.property(three.cementHelper.dependencies, 'messagingThree');
+    assert.property(three.cementHelper.dependencies, 'healthCheckThree');
   });
 });
 
