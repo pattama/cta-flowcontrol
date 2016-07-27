@@ -54,5 +54,18 @@ describe('cement tools loader', () => {
     assert.property(three.cementHelper.dependencies, 'messagingThree');
     assert.property(three.cementHelper.dependencies, 'healthCheckThree');
   });
+  it('should throw an error if a tool is not found', () => {
+    config.tools.push({
+      name: 'unknown',
+      module: 'unknown',
+    });
+    try {
+      const cement2 = new Cement(config);
+    } catch (err) {
+      assert(err);
+      return;
+    }
+    assert.fail('should throw an error');
+  });
 });
 
