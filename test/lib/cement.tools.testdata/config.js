@@ -2,39 +2,46 @@
 
 module.exports = {
   tools: [{
-    name: 'logger',
-    module: 'cta-logger',
+    name: 't0',
+    module: '../test/lib/cement.tools.testdata/tool.js',
     properties: {},
-    global: true,
-    scope: 'bricks', // all, tools
-    singleton: false,
   }, {
-    name: 'messaging',
-    module: 'cta-messaging',
-    properties: {
-      provider: 'rabbitmq',
-      parameters: {
-        url: 'amqp://localhost?heartbeat=60',
-        newInstance: true,
-      },
-    },
+    name: 't1',
+    module: '../test/lib/cement.tools.testdata/tool.js',
+    properties: {},
+    scope: 'all',
   }, {
-    name: 'healthcheck',
-    module: 'cta-healthcheck',
-    singleton: true,
+    name: 't2',
+    module: '../test/lib/cement.tools.testdata/tool.js',
+    properties: {},
+    scope: 'tools',
+  }, {
+    name: 't3',
+    module: '../test/lib/cement.tools.testdata/tool.js',
+    properties: {},
+    scope: 'bricks',
+  }, {
+    name: 't4',
+    module: '../test/lib/cement.tools.testdata/tool.js',
+    properties: {},
     dependencies: {
-      messaging: 'messaging',
+      t4t0: 't0',
     },
-    properties: {
-      port: 8090,
-      newInstance: true,
+  }, {
+    name: 't5',
+    module: '../test/lib/cement.tools.testdata/tool.js',
+    properties: {},
+    dependencies: {
+      t5t0: 't0',
+      t5t4: 't4',
     },
   }],
   bricks: [{
-    name: 'one',
+    name: 'b1',
     module: 'cta-brick',
     dependencies: {
-      messagingOne: 'messaging',
+      b1t2: 't2',
+      b1t0: 't0',
     },
     properties: {},
     publish: [{
@@ -42,23 +49,20 @@ module.exports = {
       data: [{}],
     }],
   }, {
-    name: 'two',
+    name: 'b2',
     module: 'cta-brick',
     properties: {},
     dependencies: {
-      healthCheckTwo: 'healthcheck',
+      b2t5: 'b2t5',
+      t3: 't4', // override global dependency t3
     },
     subscribe: [{
       topic: 'topics.com',
       data: [{}],
     }],
   }, {
-    name: 'three',
+    name: 'b3',
     module: 'cta-brick',
-    dependencies: {
-      messagingThree: 'messaging',
-      healthCheckThree: 'healthcheck',
-    },
     properties: {},
     subscribe: [{
       topic: 'topics.com',
