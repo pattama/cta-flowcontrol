@@ -2,7 +2,8 @@
 const assert = require('chai').assert;
 const path = require('path');
 const fs = require('fs');
-const logFile = __dirname + path.sep + 'cta-flowcontrol.log';
+const os = require('os');
+const logFile = os.tmpDir() + path.sep + 'cta-flowcontrol-' + Date.now() + '.log';
 
 describe('logger', function() {
   before(function(done) {
@@ -30,12 +31,14 @@ describe('logger', function() {
   it('cement with custom logger config', function(done) {
     const Cement = require('../../../lib/cement');
     const config = require('./config.testdata');
-    config.logger = {
+    config.tools = [{
+      name: 'logger',
+      module: 'cta-logger',
       properties: {
         filename: logFile,
         level: 'debug',
       },
-    };
+    }];
     const cement = new Cement(config);
     cement.logger.info('Hi there');
     setTimeout(function() {

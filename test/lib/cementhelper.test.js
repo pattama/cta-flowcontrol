@@ -61,20 +61,28 @@ describe('CementHelper - publish Context', function() {
   });
 });
 
-describe('CementHelper - logger', function() {
-  it('should have logger instance as property', function(done) {
+describe('CementHelper - dependencies', function() {
+  it('should have dependencies as property', function(done) {
     try {
-      const logger = {
-        info: function() {
-          return;
-        },
+      const dependencies = {
+        one: {},
+        two: {},
       };
-      const cementHelper = new CementHelper(cement, 'mybrick1', logger);
-      expect(cementHelper).to.have.property('logger');
-      cementHelper.logger.info('Hi there!');
+      const cementHelper = new CementHelper(cement, 'mybrick1', dependencies);
+      expect(cementHelper).to.have.property('dependencies');
       done();
     } catch (e) {
       done(e);
     }
   });
 });
+
+/*describe('CementHelper - health', function() {
+  it('should pull up health to cement', function(done) {
+    const cementHelper = new CementHelper(cement, 'mybrick1');
+    const health = sinon.spy(cement, 'health');
+    cementHelper.health({});
+    sinon.assert.calledWith(health, 'mybrick1', {});
+    done();
+  });
+});*/
