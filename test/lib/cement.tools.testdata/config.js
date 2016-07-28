@@ -3,46 +3,33 @@
 module.exports = {
   tools: [{
     name: 't0',
-    module: '../test/lib/cement.tools.testdata/tool.js',
-    properties: {},
-  }, {
-    name: 't1',
-    module: '../test/lib/cement.tools.testdata/tool.js',
+    module: '../test/lib/cement.tools.testdata/t0.js',
     properties: {},
     scope: 'all',
   }, {
-    name: 't2',
-    module: '../test/lib/cement.tools.testdata/tool.js',
-    properties: {},
-    scope: 'tools',
-  }, {
-    name: 't3',
-    module: '../test/lib/cement.tools.testdata/tool.js',
+    name: 't1',
+    module: '../test/lib/cement.tools.testdata/t1.js',
     properties: {},
     scope: 'bricks',
   }, {
-    name: 't4',
-    module: '../test/lib/cement.tools.testdata/tool.js',
+    name: 't2',
+    module: '../test/lib/cement.tools.testdata/t2.js',
     properties: {},
     dependencies: {
-      t4t0: 't0',
+      t1: 't1',
     },
   }, {
-    name: 't5',
-    module: '../test/lib/cement.tools.testdata/tool.js',
+    name: 't3',
+    module: '../test/lib/cement.tools.testdata/t3.js',
     properties: {},
     dependencies: {
-      t5t0: 't0',
-      t5t4: 't4',
+      t3a: 't1',
+      t3b: 't2',
     },
   }],
   bricks: [{
     name: 'b1',
     module: 'cta-brick',
-    dependencies: {
-      b1t2: 't2',
-      b1t0: 't0',
-    },
     properties: {},
     publish: [{
       topic: 'topics.com',
@@ -53,8 +40,7 @@ module.exports = {
     module: 'cta-brick',
     properties: {},
     dependencies: {
-      b2t5: 'b2t5',
-      t3: 't4', // override global dependency t3
+      t2: 't2',
     },
     subscribe: [{
       topic: 'topics.com',
@@ -64,6 +50,9 @@ module.exports = {
     name: 'b3',
     module: 'cta-brick',
     properties: {},
+    dependencies: {
+      t0: 't3', // override global dependency t0
+    },
     subscribe: [{
       topic: 'topics.com',
       data: [{}],
