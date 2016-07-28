@@ -8,8 +8,10 @@ describe('Cement - init', () => {
     const config = require('./cement.init.bricks.testdata/config12');
     const cement = new Cement(config);
     const start = sinon.spy(cement, 'start');
+    const eventStartedEmitted = sinon.spy(cement, 'emit').withArgs('started');
     setTimeout(() => {
       sinon.assert.calledOnce(start);
+      sinon.assert.calledOnce(eventStartedEmitted);
       done();
     }, 1000);
   });
