@@ -10,8 +10,8 @@
           "data": [
             {
               "nature": {
-                "type": "Execution",
-                "quality": "CommandLine"
+                "type": "execution",
+                "quality": "commandline"
               }
             }
           ]
@@ -21,7 +21,7 @@
           "data": [
             {
               "nature": {
-                "type": "TestStatus"
+                "type": "teststatus"
               }
             }
           ]
@@ -38,8 +38,8 @@
           "data": [
             {
               "nature": {
-                "type": "Execution",
-                "quality": "CommandLine"
+                "type": "execution",
+                "quality": "commandline"
               }
             }
           ]
@@ -51,7 +51,7 @@
           "data": [
             {
               "nature": {
-                "type": "Execution"
+                "type": "execution"
               }
             }
           ]
@@ -61,7 +61,7 @@
           "data": [
             {
               "nature": {
-                "type": "Execution"
+                "type": "execution"
               }
             }
           ]
@@ -86,8 +86,8 @@
           "data": [
             {
               "nature": {
-                "type": "Execution",
-                "quality": "CommandLine"
+                "type": "execution",
+                "quality": "commandline"
               }
             }
           ]

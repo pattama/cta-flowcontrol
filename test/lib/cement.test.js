@@ -9,10 +9,10 @@ const sinon = require('sinon');
 require('sinon-as-promised');
 
 const Cement = require('../../lib/cement');
+const SmartEventEmitter = require('../../lib/smarteventemitter');
 const CementHelper = require('../../lib/cementhelper');
 const configuration = require('./cement-configuration.json');
-
-const cement = new Cement(configuration);
+const authorizedEvents = require('../../lib/cementevents');
 
 describe('Cement - instantiate', function() {
   describe('validating core fields', function() {
@@ -391,8 +391,18 @@ describe('Cement - instantiate', function() {
   });
 
   context('when valid', function() {
+    let cement;
+    before(function() {
+      sinon.spy(SmartEventEmitter.prototype, 'setAuthorizedEvents');
+      cement = new Cement(configuration);
+    });
+    after(function() {
+      SmartEventEmitter.prototype.setAuthorizedEvents.restore();
+    });
     it('should return a new Cement', function() {
+      expect(Object.getPrototypeOf(Cement)).to.equal(SmartEventEmitter);
       expect(cement).to.be.an.instanceof(Cement);
+      expect(SmartEventEmitter.prototype.setAuthorizedEvents.calledWith(authorizedEvents)).to.equal(true);
       expect(cement).to.have.property('bricks').and.to.be.a('Map');
       expect(cement).to.have.property('channels').and.to.be.a('Map');
       configuration.bricks.forEach(function(brick) {
@@ -425,7 +435,15 @@ describe('Cement - instantiate', function() {
 });
 
 describe('Cement - get publishing channels (e.g. destinations) of a brick', function() {
-  const brick = cement.bricks.get('mybrick1');
+  let cement;
+  let brick;
+  before(function(done) {
+    cement = new Cement(configuration);
+    cement.on('initialized', function() {
+      brick = cement.bricks.get('mybrick1');
+      done();
+    });
+  });
 
   describe('arguments validation', function() {
     context('when missing/incorrect \'name\' string property', function() {
@@ -454,7 +472,7 @@ describe('Cement - get publishing channels (e.g. destinations) of a brick', func
     it('should return an array of channels', function() {
       const data = {
         nature: {
-          type: 'Execution',
+          type: 'execution',
         },
         payload: {
           foo: 'bar',
@@ -474,22 +492,26 @@ describe('Cement - get publishing channels (e.g. destinations) of a brick', func
 });
 
 describe('Cement - publish Context (no channels matching)', function() {
+  let cement;
   let brick;
   let context;
   before(function(done) {
-    brick = cement.bricks.get('mybrick1');
-    context = brick.cementHelper.createContext({
-      id: '001',
-      nature: {
-        type: 'Execution',
-        quality: 'CommandLine',
-      },
-      payload: {},
+    cement = new Cement(configuration);
+    cement.on('initialized', function() {
+      brick = cement.bricks.get('mybrick1');
+      context = brick.cementHelper.createContext({
+        id: '001',
+        nature: {
+          type: 'execution',
+          quality: 'commandline',
+        },
+        payload: {},
+      });
+      sinon.stub(cement, 'getDestinations', () => {
+        return [];
+      });
+      setTimeout(done, 2000);
     });
-    sinon.stub(cement, 'getDestinations', () => {
-      return [];
-    });
-    setTimeout(done, 2000);
   });
 
   it('throw an error', function() {
@@ -505,6 +527,7 @@ describe('Cement - publish Context (no channels matching)', function() {
 });
 
 describe('Cement - publish Context', function() {
+  let cement;
   let brick;
   let context;
   let destinations;
@@ -513,38 +536,41 @@ describe('Cement - publish Context', function() {
   let spyCementPublish;
   let spyCementDestinations;
   before(function(done) {
-    brick = cement.bricks.get('mybrick1');
-    context = brick.cementHelper.createContext({
-      id: '001',
-      nature: {
-        type: 'Execution',
-        quality: 'CommandLine',
-      },
-      payload: {
-        hello: 'world',
-      },
-    }).on('accept', function onContextAccept(who) {
-      console.log(`${brick.configuration.name}: ${who} accepted`);
-    })
-      .on('reject', function onContextReject(who, reject) {
-        console.log(`${brick.configuration.name}: ${who} rejected with ${reject}`);
+    cement = new Cement(configuration);
+    cement.on('initialized', function() {
+      brick = cement.bricks.get('mybrick1');
+      context = brick.cementHelper.createContext({
+        id: '001',
+        nature: {
+          type: 'execution',
+          quality: 'commandline',
+        },
+        payload: {
+          hello: 'world',
+        },
+      }).on('accept', function onContextAccept(who) {
+        console.log(`${brick.configuration.name}: ${who} accepted`);
       })
-      .on('done', function onContextReject(who) {
-        console.log(`${brick.configuration.name}: ${who} done`);
-      })
-      .on('error', function onContextReject(who, error) {
-        console.log(`${brick.configuration.name}: ${who} done with error ${error}`);
+        .on('reject', function onContextReject(who, reject) {
+          console.log(`${brick.configuration.name}: ${who} rejected with ${reject}`);
+        })
+        .on('done', function onContextReject(who) {
+          console.log(`${brick.configuration.name}: ${who} done`);
+        })
+        .on('error', function onContextReject(who, error) {
+          console.log(`${brick.configuration.name}: ${who} done with error ${error}`);
+        });
+      destinations = cement.getDestinations(context.from, context.data);
+      spyChannels = [];
+      destinations.forEach((channel) => {
+        spyChannels.push(sinon.spy(channel, 'publish'));
       });
-    destinations = cement.getDestinations(context.from, context.data);
-    spyChannels = [];
-    destinations.forEach((channel) => {
-      spyChannels.push(sinon.spy(channel, 'publish'));
+      spyCementHelper = sinon.spy(brick.cementHelper, 'publish');
+      spyCementPublish = sinon.spy(cement, 'publish');
+      spyCementDestinations = sinon.spy(cement, 'getDestinations');
+      context.publish();
+      setTimeout(done, 2000);
     });
-    spyCementHelper = sinon.spy(brick.cementHelper, 'publish');
-    spyCementPublish = sinon.spy(cement, 'publish');
-    spyCementDestinations = sinon.spy(cement, 'getDestinations');
-    context.publish();
-    setTimeout(done, 2000);
   });
 
   it('should retrieve destinations', function(done) {

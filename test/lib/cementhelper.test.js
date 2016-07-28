@@ -29,8 +29,8 @@ describe('CementHelper - create Context', function() {
     const data = {
       id: '001',
       nature: {
-        quality: 'Execution',
-        type: 'CommandLine',
+        quality: 'execution',
+        type: 'commandline',
       },
       payload: {},
     };
@@ -49,8 +49,8 @@ describe('CementHelper - publish Context', function() {
     const data = {
       id: '001',
       nature: {
-        type: 'Execution',
-        quality: 'CommandLine',
+        type: 'execution',
+        quality: 'commandline',
       },
       payload: {},
     };
@@ -77,7 +77,8 @@ describe('CementHelper - dependencies', function() {
   });
 });
 
-/*describe('CementHelper - health', function() {
+/*
+describe('CementHelper - health', function() {
   it('should pull up health to cement', function(done) {
     const cementHelper = new CementHelper(cement, 'mybrick1');
     const health = sinon.spy(cement, 'health');
@@ -85,4 +86,5 @@ describe('CementHelper - dependencies', function() {
     sinon.assert.calledWith(health, 'mybrick1', {});
     done();
   });
-});*/
+});
+*/

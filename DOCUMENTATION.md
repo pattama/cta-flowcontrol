@@ -21,6 +21,9 @@
 <dt><a href="#Context">Context</a></dt>
 <dd><p>Context class</p>
 </dd>
+<dt><a href="#SmartEventEmitter">SmartEventEmitter</a></dt>
+<dd><p>SmartEventEmitter class</p>
+</dd>
 </dl>
 
 ## Typedefs
@@ -141,13 +144,13 @@ CementHelper class
 
 
 * [CementHelper](#CementHelper)
-    * [new CementHelper(cement, brickName, logger)](#new_CementHelper_new)
+    * [new CementHelper(cement, brickName, dependencies)](#new_CementHelper_new)
     * [.createContext(data)](#CementHelper+createContext) ⇒ <code>[Context](#Context)</code>
     * [.publish(context)](#CementHelper+publish)
 
 <a name="new_CementHelper_new"></a>
 
-### new CementHelper(cement, brickName, logger)
+### new CementHelper(cement, brickName, dependencies)
 Creates a new CementHelper
 
 
@@ -155,7 +158,7 @@ Creates a new CementHelper
 | --- | --- | --- |
 | cement | <code>[Cement](#Cement)</code> | the Cement instance |
 | brickName | <code>String</code> | the name of the Brick |
-| logger | <code>object</code> | logger instance |
+| dependencies | <code>object</code> | brick modules dependencies |
 
 <a name="CementHelper+createContext"></a>
 
@@ -317,6 +320,39 @@ Creates a new Context
 Publish this Context
 
 **Kind**: instance method of <code>[Context](#Context)</code>  
+<a name="SmartEventEmitter"></a>
+
+## SmartEventEmitter
+SmartEventEmitter class
+
+**Kind**: global class  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| authorizedEvents | <code>Set.&lt;String&gt;</code> | Set of authorized events |
+
+
+* [SmartEventEmitter](#SmartEventEmitter)
+    * [new SmartEventEmitter()](#new_SmartEventEmitter_new)
+    * [.setAuthorizedEvents(authorizedEvents)](#SmartEventEmitter+setAuthorizedEvents)
+
+<a name="new_SmartEventEmitter_new"></a>
+
+### new SmartEventEmitter()
+Creates a SmartEventEmitter instance
+
+<a name="SmartEventEmitter+setAuthorizedEvents"></a>
+
+### smartEventEmitter.setAuthorizedEvents(authorizedEvents)
+Add events to the authorizedEvents Set
+
+**Kind**: instance method of <code>[SmartEventEmitter](#SmartEventEmitter)</code>  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| authorizedEvents | <code>Array.&lt;String&gt;</code> | Array of authorized events |
+
 <a name="CementBrick"></a>
 
 ## CementBrick : <code>Object</code>
