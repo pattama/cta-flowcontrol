@@ -439,7 +439,7 @@ describe('Cement - get publishing channels (e.g. destinations) of a brick', func
   let brick;
   before(function(done) {
     cement = new Cement(configuration);
-    cement.on('initialized', function() {
+    cement.on('started', function() {
       brick = cement.bricks.get('mybrick1');
       done();
     });
@@ -497,7 +497,7 @@ describe('Cement - publish Context (no channels matching)', function() {
   let context;
   before(function(done) {
     cement = new Cement(configuration);
-    cement.on('initialized', function() {
+    cement.on('started', function() {
       brick = cement.bricks.get('mybrick1');
       context = brick.cementHelper.createContext({
         id: '001',
@@ -537,7 +537,7 @@ describe('Cement - publish Context', function() {
   let spyCementDestinations;
   before(function(done) {
     cement = new Cement(configuration);
-    cement.on('initialized', function() {
+    cement.on('started', function() {
       brick = cement.bricks.get('mybrick1');
       context = brick.cementHelper.createContext({
         id: '001',
