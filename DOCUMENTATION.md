@@ -145,7 +145,7 @@ CementHelper class
 
 * [CementHelper](#CementHelper)
     * [new CementHelper(cement, brickName, dependencies)](#new_CementHelper_new)
-    * [.createContext(data)](#CementHelper+createContext) ⇒ <code>[Context](#Context)</code>
+    * [.createContext(data, [events])](#CementHelper+createContext) ⇒ <code>[Context](#Context)</code>
     * [.publish(context)](#CementHelper+publish)
 
 <a name="new_CementHelper_new"></a>
@@ -162,7 +162,7 @@ Creates a new CementHelper
 
 <a name="CementHelper+createContext"></a>
 
-### cementHelper.createContext(data) ⇒ <code>[Context](#Context)</code>
+### cementHelper.createContext(data, [events]) ⇒ <code>[Context](#Context)</code>
 Returns a new Context
 
 **Kind**: instance method of <code>[CementHelper](#CementHelper)</code>  
@@ -170,6 +170,7 @@ Returns a new Context
 | Param | Type | Description |
 | --- | --- | --- |
 | data | <code>[Job](#Job)</code> | the data to publish |
+| [events] | <code>Array.&lt;String&gt;</code> | additionnal events to authorize |
 
 <a name="CementHelper+publish"></a>
 
@@ -303,16 +304,24 @@ Context class
 | cementHelper | <code>[CementHelper](#CementHelper)</code> |  |
 | from | <code>String</code> | the name of the brick which created this Context |
 | data | <code>[Job](#Job)</code> | the data to publish |
+| authorizedEvents | <code>Set.&lt;String&gt;</code> | events for which listeners can be added |
 
 
 * [Context](#Context)
-    * [new Context()](#new_Context_new)
+    * [new Context(cementHelper, data, [events])](#new_Context_new)
     * [.publish()](#Context+publish)
 
 <a name="new_Context_new"></a>
 
-### new Context()
+### new Context(cementHelper, data, [events])
 Creates a new Context
+
+
+| Param | Type | Description |
+| --- | --- | --- |
+| cementHelper | <code>[CementHelper](#CementHelper)</code> |  |
+| data | <code>[Job](#Job)</code> | the data to publish |
+| [events] | <code>Array.&lt;String&gt;</code> | additionnal events to authorize |
 
 <a name="Context+publish"></a>
 
