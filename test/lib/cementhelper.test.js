@@ -24,22 +24,50 @@ describe('CementHelper - instantiate', function() {
 });
 
 describe('CementHelper - create Context', function() {
-  it('should return a Context', function(done) {
-    const cementHelper = new CementHelper(cement, 'mybrick1');
-    const data = {
-      id: '001',
-      nature: {
-        quality: 'execution',
-        type: 'commandline',
-      },
-      payload: {},
-    };
-    const context = cementHelper.createContext(data);
-    expect(context).to.be.an.instanceof(Context);
-    expect(context).to.have.property('cementHelper').and.to.be.deep.equal(cementHelper);
-    expect(context).to.have.property('from').and.to.be.deep.equal(cementHelper.brickName);
-    expect(context).to.have.property('data').and.to.be.deep.equal(data);
-    done();
+  context('without additional events', function() {
+    it('should return a Context', function(done) {
+      const cementHelper = new CementHelper(cement, 'mybrick1');
+      const data = {
+        id: '001',
+        nature: {
+          quality: 'execution',
+          type: 'commandline',
+        },
+        payload: {},
+      };
+      const context = cementHelper.createContext(data);
+      expect(context).to.be.an.instanceof(Context);
+      expect(context).to.have.property('cementHelper').and.to.be.deep.equal(cementHelper);
+      expect(context).to.have.property('from').and.to.be.deep.equal(cementHelper.brickName);
+      expect(context).to.have.property('data').and.to.be.deep.equal(data);
+      expect(context).to.have.property('authorizedEvents').and.to.be.a('Set');
+      done();
+    });
+  });
+
+  context('with additional events', function() {
+    it('should return a Context', function(done) {
+      const cementHelper = new CementHelper(cement, 'mybrick1');
+      const data = {
+        id: '001',
+        nature: {
+          quality: 'execution',
+          type: 'commandline',
+        },
+        payload: {},
+      };
+      const events = [ 'foo', 'bar' ];
+      const context = cementHelper.createContext(data, events);
+      expect(context).to.be.an.instanceof(Context);
+      expect(context).to.have.property('cementHelper').and.to.be.deep.equal(cementHelper);
+      expect(context).to.have.property('from').and.to.be.deep.equal(cementHelper.brickName);
+      expect(context).to.have.property('data').and.to.be.deep.equal(data);
+      expect(context).to.have.property('authorizedEvents').and.to.be.a('Set');
+      events.forEach(function(event) {
+        expect(context.authorizedEvents.has(event)).to.equal(true);
+      });
+      done();
+    });
   });
 });
 

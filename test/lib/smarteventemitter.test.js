@@ -47,39 +47,37 @@ describe('SmartEventEmitter - setAuthorizedEvents', function() {
   });
 });
 
-describe('SmartEventEmmiter - methods adding listener', function() {
+describe('SmartEventEmmiter - emit', function() {
   let smartEventEmitter;
   const authorizedEvents = ['done'];
   before(function() {
     smartEventEmitter = new SmartEventEmitter();
     smartEventEmitter.setAuthorizedEvents(authorizedEvents);
   });
-  ['on', 'once', 'addListener'].forEach(function(methodName) {
-    describe(`${methodName}`, function() {
-      let result;
-      context('when event is authorized', function() {
-        before(function() {
-          sinon.spy(EventEmitter.prototype, methodName);
-          result = smartEventEmitter[methodName]('done', sinon.stub());
-        });
-        after(function() {
-          EventEmitter.prototype[methodName].restore();
-        });
-        it(`should call parent class (e.g. EventEmitter) '${methodName}' method`, function() {
-          expect(EventEmitter.prototype[methodName].called).to.equal(true);
-        });
-        it('should return the smartEventEmitter (this)', function() {
-          expect(result).to.equal(smartEventEmitter);
-        });
+  describe(`emit`, function() {
+    let result;
+    context('when event is authorized', function() {
+      before(function() {
+        sinon.spy(EventEmitter.prototype, 'emit');
+        result = smartEventEmitter.emit('done');
       });
+      after(function() {
+        EventEmitter.prototype.emit.restore();
+      });
+      it(`should call parent class (e.g. EventEmitter) 'emit' method`, function() {
+        expect(EventEmitter.prototype.emit.called).to.equal(true);
+      });
+      it(`should return the response from parent class 'emit' method`, function() {
+        expect(result).to.equal(EventEmitter.prototype.emit.returnValues[0]);
+      });
+    });
 
-      context('when event is not authorized', function() {
-        it(`throw an Error`, function() {
-          const notAuthorizedEvent = 'not-authorized';
-          expect(function() {
-            smartEventEmitter[methodName](notAuthorizedEvent, sinon.stub());
-          }).to.throw(Error, `Adding listener to event '${notAuthorizedEvent}' is not authorized.`);
-        });
+    context('when event is not authorized', function() {
+      it(`throw an Error`, function() {
+        const notAuthorizedEvent = 'not-authorized';
+        expect(function() {
+          smartEventEmitter.emit(notAuthorizedEvent, sinon.stub());
+        }).to.throw(Error, `Emitting event '${notAuthorizedEvent}' is not authorized.`);
       });
     });
   });
