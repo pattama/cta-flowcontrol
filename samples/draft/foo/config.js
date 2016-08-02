@@ -11,7 +11,7 @@ module.exports = {
   }],
   bricks: [{
     name: 'Foo1',
-    module: '../samples/home/foo/foo1.js',
+    module: '../samples/draft/foo/foo1.js',
     publish: [{
       topic: 'topics',
       data: [{
@@ -23,7 +23,7 @@ module.exports = {
     }],
   }, {
     name: 'Foo2',
-    module: '../samples/home/foo/foo2.js',
+    module: '../samples/draft/foo/foo2.js',
     subscribe: [{
       topic: 'topics',
       data: [{

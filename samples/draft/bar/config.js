@@ -11,7 +11,7 @@ module.exports = {
   }],
   bricks: [{
     name: 'Bar1',
-    module: '../samples/home/bar/bar1.js',
+    module: '../samples/draft/bar/bar1.js',
     publish: [{
       topic: 'topics',
       data: [{
@@ -23,7 +23,7 @@ module.exports = {
     }],
   }, {
     name: 'Bar2',
-    module: '../samples/home/bar/bar2.js',
+    module: '../samples/draft/bar/bar2.js',
     subscribe: [{
       topic: 'topics',
       data: [{
