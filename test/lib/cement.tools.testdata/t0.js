@@ -1,9 +1,10 @@
 'use strict';
 
-class T0 {
-  constructor(parameters, dependencies) {
-    this.parameters = parameters;
-    this.dependencies = dependencies;
+const Tool = require('cta-tool');
+
+class T0 extends Tool {
+  constructor(dependencies, configuration) {
+    super(dependencies, configuration);
     this.name = 'T0';
   }
 }
