@@ -404,6 +404,7 @@ describe('Cement - instantiate', function() {
     it('should return a new Cement', function() {
       expect(Object.getPrototypeOf(Cement)).to.equal(SmartEventEmitter);
       expect(cement).to.be.an.instanceof(Cement);
+      expect(cement).to.have.property('dirname', process.cwd());
       expect(SmartEventEmitter.prototype.setAuthorizedEvents.calledWith(authorizedEvents)).to.equal(true);
       expect(cement).to.have.property('bricks').and.to.be.a('Map');
       expect(cement).to.have.property('channels').and.to.be.a('Map');

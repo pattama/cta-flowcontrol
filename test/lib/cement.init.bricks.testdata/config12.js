@@ -5,7 +5,7 @@ const config = {
 //------------------------------------------------------------------------
     {
       name: 'One',
-      module: '../test/lib/cement.init.bricks.testdata/one.js',
+      module: './test/lib/cement.init.bricks.testdata/one.js',
       properties: {
       },
       subscribe: [{
@@ -16,7 +16,7 @@ const config = {
 //------------------------------------------------------------------------
     {
       name: 'Two',
-      module: '../test/lib/cement.init.bricks.testdata/two.js',
+      module: './test/lib/cement.init.bricks.testdata/two.js',
       properties: {},
       subscribe: [{
         topic: 'topics.com',

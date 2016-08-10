@@ -66,7 +66,7 @@ Cement class
 
 
 * [Cement](#Cement)
-    * [new Cement(configuration, dirname)](#new_Cement_new)
+    * [new Cement(configuration, [dirname])](#new_Cement_new)
     * [.require(path)](#Cement+require) ⇒ <code>Module</code>
     * [.bootstrap()](#Cement+bootstrap)
     * [.start()](#Cement+start)
@@ -76,14 +76,14 @@ Cement class
 
 <a name="new_Cement_new"></a>
 
-### new Cement(configuration, dirname)
+### new Cement(configuration, [dirname])
 Creates a new Cement instance
 
 
 | Param | Type | Description |
 | --- | --- | --- |
 | configuration | <code>[CementConfig](#CementConfig)</code> | configuration object for instantiating a new Cement |
-| dirname | <code>String</code> | the path of the directory to use for the wrapped require() |
+| [dirname] | <code>String</code> | the path of the directory to use for the wrapped require(). Defaults to process.cwd() |
 
 <a name="Cement+require"></a>
 
