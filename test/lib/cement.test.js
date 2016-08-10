@@ -8,6 +8,8 @@ const proxyquire = require('proxyquire');
 const sinon = require('sinon');
 require('sinon-as-promised');
 
+const nodePath = require('path');
+
 const Cement = require('../../lib/cement');
 const SmartEventEmitter = require('../../lib/smarteventemitter');
 const CementHelper = require('../../lib/cementhelper');
@@ -430,6 +432,71 @@ describe('Cement - instantiate', function() {
           });
         }
       });
+    });
+  });
+});
+
+describe('Cement - dirname and require', function() {
+  let cement;
+  const dirname = '/foo/bar';
+  before(function() {
+    cement = new Cement(configuration, dirname);
+  });
+  after(function() {
+  });
+
+  it('should have property dirname', function() {
+    expect(cement).to.have.property('dirname', dirname);
+  });
+
+  context('when path argument is a relative path ("./*")', function() {
+    const mockModule = sinon.stub();
+    const mockPath = './mock/path/to/module';
+    const joinPath = nodePath.join(dirname, mockPath);
+    let result;
+    before(function() {
+      mockrequire(joinPath, mockModule);
+      result = cement.require(mockPath);
+    });
+    after(function() {
+      mockrequire.stop(joinPath);
+    });
+    it('should return mockModule', function() {
+      expect(result).to.equal(mockModule);
+    });
+  });
+
+  context('when path argument is a relative path ("../*")', function() {
+    const mockModule = sinon.stub();
+    const mockPath = '../../../mock/path/to/module';
+    const joinPath = nodePath.join(dirname, mockPath);
+    let result;
+    before(function() {
+      mockrequire(joinPath, mockModule);
+      result = cement.require(mockPath);
+    });
+    after(function() {
+      mockrequire.stop(joinPath);
+    });
+    it('should return mockModule', function() {
+      expect(result).to.equal(mockModule);
+    });
+  });
+
+  context('when path argument is not a relative path', function() {
+    const mockModule = sinon.stub();
+    const mockPath = 'mock/path/to/module';
+    // const mockPath = '/mock/path/to/module';
+    let result;
+    before(function() {
+      mockrequire(mockPath, mockModule);
+      result = cement.require(mockPath);
+    });
+    after(function() {
+      mockrequire.stop(mockPath);
+    });
+    it('should return mockModule', function() {
+      expect(result).to.equal(mockModule);
     });
   });
 });
