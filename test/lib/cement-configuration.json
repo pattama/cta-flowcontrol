@@ -1,4 +1,5 @@
 {
+  "name": "test",
   "bricks": [
     {
       "name": "mybrick1",
