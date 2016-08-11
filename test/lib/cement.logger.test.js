@@ -2,6 +2,7 @@
 const assert = require('chai').assert;
 const path = require('path');
 const os = require('os');
+const fs = require('fs');
 const _ = require('lodash');
 const Cement = require('../../lib/cement');
 const config = _.cloneDeep(require('./cement-configuration.json'));
@@ -51,6 +52,17 @@ describe('logger', () => {
     assert.property(cement.logger, 'verbose');
     assert.property(cement.logger, 'debug');
     assert.property(cement.logger, 'silly');
+    const text = 'It is about ' + new Date() + ' right now!';
+    cement.logger.info(text);
+    setTimeout(function() {
+      const data = fs.readFileSync(logFile).toString();
+      fs.unlinkSync(logFile);
+      console.log('data: ', data);
+      assert(data.indexOf('TEST') !== -1);
+      assert(data.indexOf('CEMENT') !== -1);
+      assert(data.indexOf(text) !== -1);
+      done();
+    }, 100);
     done();
   });
 });
