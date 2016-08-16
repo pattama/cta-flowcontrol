@@ -63,6 +63,5 @@ describe('logger', () => {
       assert(data.indexOf(text) !== -1);
       done();
     }, 100);
-    done();
   });
 });
