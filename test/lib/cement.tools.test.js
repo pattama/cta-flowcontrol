@@ -30,6 +30,19 @@ describe('cement tools loader', () => {
   const t3 = cement.tools.t3;
 
   describe('tools\'s dependencies', () => {
+    it('should inject cement dependency in all tools', () => {
+      assert.property(t0.dependencies, 'cement');
+      assert.deepEqual(t0.dependencies.cement, cement);
+
+      assert.property(t1.dependencies, 'cement');
+      assert.deepEqual(t1.dependencies.cement, cement);
+
+      assert.property(t2.dependencies, 'cement');
+      assert.deepEqual(t2.dependencies.cement, cement);
+
+      assert.property(t3.dependencies, 'cement');
+      assert.deepEqual(t3.dependencies.cement, cement);
+    });
     it('should inject tools that are scoped "all"', () => {
       // t0 has the scope 'all'
       assert.property(t1.dependencies, 't0');
