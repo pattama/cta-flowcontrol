@@ -66,7 +66,8 @@ Cement class
 
 
 * [Cement](#Cement)
-    * [new Cement(configuration)](#new_Cement_new)
+    * [new Cement(configuration, [dirname])](#new_Cement_new)
+    * [.require(path)](#Cement+require) ⇒ <code>Module</code>
     * [.bootstrap()](#Cement+bootstrap)
     * [.start()](#Cement+start)
     * [.validate(configuration)](#Cement+validate)
@@ -75,13 +76,25 @@ Cement class
 
 <a name="new_Cement_new"></a>
 
-### new Cement(configuration)
+### new Cement(configuration, [dirname])
 Creates a new Cement instance
 
 
 | Param | Type | Description |
 | --- | --- | --- |
 | configuration | <code>[CementConfig](#CementConfig)</code> | configuration object for instantiating a new Cement |
+| [dirname] | <code>String</code> | the path of the directory to use for the wrapped require(). Defaults to process.cwd() |
+
+<a name="Cement+require"></a>
+
+### cement.require(path) ⇒ <code>Module</code>
+Wraps NodeJS require() method and returns the loaded ModuleIf path is a relative path ("./*"), prefix the require() arg with the dirname
+
+**Kind**: instance method of <code>[Cement](#Cement)</code>  
+
+| Param |
+| --- |
+| path | 
 
 <a name="Cement+bootstrap"></a>
 
@@ -145,6 +158,7 @@ CementHelper class
 
 * [CementHelper](#CementHelper)
     * [new CementHelper(cement, brickName, dependencies)](#new_CementHelper_new)
+    * [.require(path)](#CementHelper+require) ⇒ <code>Module</code>
     * [.createContext(data, [events])](#CementHelper+createContext) ⇒ <code>[Context](#Context)</code>
     * [.publish(context)](#CementHelper+publish)
 
@@ -159,6 +173,17 @@ Creates a new CementHelper
 | cement | <code>[Cement](#Cement)</code> | the Cement instance |
 | brickName | <code>String</code> | the name of the Brick |
 | dependencies | <code>object</code> | brick modules dependencies |
+
+<a name="CementHelper+require"></a>
+
+### cementHelper.require(path) ⇒ <code>Module</code>
+Returns module loaded by the  Cement wrapped require method
+
+**Kind**: instance method of <code>[CementHelper](#CementHelper)</code>  
+
+| Param |
+| --- |
+| path | 
 
 <a name="CementHelper+createContext"></a>
 
