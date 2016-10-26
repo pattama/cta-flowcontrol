@@ -105,6 +105,22 @@ describe('CementHelper - dependencies', function() {
   });
 });
 
+describe('CementHelper - appProperties', function() {
+  it('should have appProperties as property', function(done) {
+    try {
+      const appProperties = {
+        foo: 'bar',
+        quz: {},
+      };
+      const cementHelper = new CementHelper(cement, 'mybrick1', {}, appProperties);
+      expect(cementHelper).to.have.property('appProperties', appProperties);
+      done();
+    } catch (e) {
+      done(e);
+    }
+  });
+});
+
 /*
 describe('CementHelper - health', function() {
   it('should pull up health to cement', function(done) {
