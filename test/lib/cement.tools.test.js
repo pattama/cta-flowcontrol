@@ -1,6 +1,6 @@
 'use strict';
 
-const flowControl = require('cta-flowcontrol');
+const flowControl = require('../../lib');
 const config = require('./cement.tools.testdata/config');
 const assert = require('chai').assert;
 const _ = require('lodash');
