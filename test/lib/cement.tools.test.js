@@ -8,11 +8,13 @@ const T0 = require('./cement.tools.testdata/t0.js');
 const T1 = require('./cement.tools.testdata/t1.js');
 const T2 = require('./cement.tools.testdata/t2.js');
 const T3 = require('./cement.tools.testdata/t3.js');
+const path = require('path');
 
 describe('Cement Tools loader', function() {
 
+  const baseDir = path.resolve(__dirname, '..', '..');
   const Cement = flowControl.Cement;
-  const cement = new Cement(config);
+  const cement = new Cement(config, baseDir);
   const t0 = cement.tools.t0;
   const t1 = cement.tools.t1;
   const t2 = cement.tools.t2;
@@ -24,7 +26,7 @@ describe('Cement Tools loader', function() {
       const _config = _.cloneDeep(config);
       delete _config.tools[0].name;
       try {
-        const _cement = new Cement(_config);
+        const _cement = new Cement(_config, baseDir);
         done('should throw an error');
       } catch (e) {
         assert(e);
@@ -36,7 +38,7 @@ describe('Cement Tools loader', function() {
       const _config = _.cloneDeep(config);
       _config.tools.push(_config.tools[0]);
       try {
-        const _cement = new Cement(_config);
+        const _cement = new Cement(_config, baseDir);
         done('should throw an error');
       } catch (e) {
         assert(e);
@@ -48,7 +50,7 @@ describe('Cement Tools loader', function() {
       const _config = _.cloneDeep(config);
       delete _config.tools[0].module;
       try {
-        const _cement = new Cement(_config);
+        const _cement = new Cement(_config, baseDir);
         done('should throw an error');
       } catch (e) {
         assert(e);
@@ -63,7 +65,7 @@ describe('Cement Tools loader', function() {
         module: 'unknown',
       });
       try {
-        const _cement = new Cement(_config);
+        const _cement = new Cement(_config, baseDir);
         done('should throw an error');
       } catch (e) {
         assert(e);
@@ -78,7 +80,7 @@ describe('Cement Tools loader', function() {
         module: './test/lib/cement.tools.testdata/err.js',
       });
       try {
-        const _cement = new Cement(_config);
+        const _cement = new Cement(_config, baseDir);
         done('should throw an error');
       } catch (e) {
         assert(e);
