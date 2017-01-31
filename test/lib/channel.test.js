@@ -416,7 +416,7 @@ describe('Channel - produce data, no subscribers can consume', function() {
     channel.publish(context);
   });
 
-  it(`should emit error event`, function() {
+  it('should emit error event', function() {
     expect(spyContextEmit.calledWith('error')).to.equal(true);
   });
 });
@@ -508,7 +508,7 @@ describe('Channel - produce data, make subscribers consume', function() {
     channel.publish(context);
   });
 
-  it(`should call subscribers' brick instance\'s validate and process method`, function(done) {
+  it('should call subscribers\' brick instance\'s validate and process method', function(done) {
     setTimeout(() => { // workaround to spy promises chain
       expect(spyValidate1.calledOnce).to.equal(true);
       expect(spyContextEmit.calledWithExactly('accept', brick1.name, context.data)).to.equal(true);

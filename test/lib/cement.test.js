@@ -8,6 +8,8 @@ const proxyquire = require('proxyquire');
 const sinon = require('sinon');
 require('sinon-as-promised');
 
+const nodePath = require('path');
+
 const Cement = require('../../lib/cement');
 const SmartEventEmitter = require('../../lib/smarteventemitter');
 const CementHelper = require('../../lib/cementhelper');
@@ -36,7 +38,7 @@ describe('Cement - instantiate', function() {
               },
             ],
           });
-        }).to.throw(Error, `missing/incorrect 'name' string property in bricks[0]`);
+        }).to.throw(Error, 'missing/incorrect \'name\' string property in bricks[0]');
       });
     });
 
@@ -59,7 +61,7 @@ describe('Cement - instantiate', function() {
               },
             ],
           });
-        }).to.throw(Error, `bricks[1] name 'foobar' is not unique`);
+        }).to.throw(Error, 'bricks[1] name \'foobar\' is not unique');
       });
     });
 
@@ -74,7 +76,7 @@ describe('Cement - instantiate', function() {
               },
             ],
           });
-        }).to.throw(Error, `missing/incorrect 'module' string property in bricks[0]`);
+        }).to.throw(Error, 'missing/incorrect \'module\' string property in bricks[0]');
       });
     });
 
@@ -91,7 +93,7 @@ describe('Cement - instantiate', function() {
               },
             ],
           });
-        }).to.throw(Error, `incorrect 'properties' object property in bricks[0]`);
+        }).to.throw(Error, 'incorrect \'properties\' object property in bricks[0]');
       });
     });
   });
@@ -110,7 +112,7 @@ describe('Cement - instantiate', function() {
               },
             ],
           });
-        }).to.throw(Error, `incorrect 'publish' Array property in bricks[0]`);
+        }).to.throw(Error, 'incorrect \'publish\' Array property in bricks[0]');
       });
     });
 
@@ -131,7 +133,7 @@ describe('Cement - instantiate', function() {
               },
             ],
           });
-        }).to.throw(Error, `missing/incorrect 'topic' string property in bricks[0].publish[0]`);
+        }).to.throw(Error, 'missing/incorrect \'topic\' string property in bricks[0].publish[0]');
       });
     });
 
@@ -153,7 +155,7 @@ describe('Cement - instantiate', function() {
               },
             ],
           });
-        }).to.throw(Error, `incorrect 'data' Array property in bricks[0].publish[0]`);
+        }).to.throw(Error, 'incorrect \'data\' Array property in bricks[0].publish[0]');
       });
     });
 
@@ -175,7 +177,7 @@ describe('Cement - instantiate', function() {
               },
             ],
           });
-        }).to.throw(Error, `empty 'data' Array property in bricks[0].publish[0]`);
+        }).to.throw(Error, 'empty \'data\' Array property in bricks[0].publish[0]');
       });
     });
 
@@ -201,7 +203,7 @@ describe('Cement - instantiate', function() {
               },
             ],
           });
-        }).to.throw(Error, `publish contract 'some.topic' is declared more than once`);
+        }).to.throw(Error, 'publish contract \'some.topic\' is declared more than once');
       });
     });
   });
@@ -220,7 +222,7 @@ describe('Cement - instantiate', function() {
               },
             ],
           });
-        }).to.throw(Error, `incorrect 'subscribe' Array property in bricks[0]`);
+        }).to.throw(Error, 'incorrect \'subscribe\' Array property in bricks[0]');
       });
     });
 
@@ -241,7 +243,7 @@ describe('Cement - instantiate', function() {
               },
             ],
           });
-        }).to.throw(Error, `missing/incorrect 'topic' string property in bricks[0].subscribe[0]`);
+        }).to.throw(Error, 'missing/incorrect \'topic\' string property in bricks[0].subscribe[0]');
       });
     });
 
@@ -263,7 +265,7 @@ describe('Cement - instantiate', function() {
               },
             ],
           });
-        }).to.throw(Error, `incorrect 'data' Array property in bricks[0].subscribe[0]`);
+        }).to.throw(Error, 'incorrect \'data\' Array property in bricks[0].subscribe[0]');
       });
     });
 
@@ -285,7 +287,7 @@ describe('Cement - instantiate', function() {
               },
             ],
           });
-        }).to.throw(Error, `empty 'data' Array property in bricks[0].subscribe[0]`);
+        }).to.throw(Error, 'empty \'data\' Array property in bricks[0].subscribe[0]');
       });
     });
 
@@ -311,7 +313,7 @@ describe('Cement - instantiate', function() {
               },
             ],
           });
-        }).to.throw(Error, `subscribe contract 'some.topic' is declared more than once`);
+        }).to.throw(Error, 'subscribe contract \'some.topic\' is declared more than once');
       });
     });
   });
@@ -402,6 +404,7 @@ describe('Cement - instantiate', function() {
     it('should return a new Cement', function() {
       expect(Object.getPrototypeOf(Cement)).to.equal(SmartEventEmitter);
       expect(cement).to.be.an.instanceof(Cement);
+      expect(cement).to.have.property('dirname', process.cwd());
       expect(SmartEventEmitter.prototype.setAuthorizedEvents.calledWith(authorizedEvents)).to.equal(true);
       expect(cement).to.have.property('bricks').and.to.be.a('Map');
       expect(cement).to.have.property('channels').and.to.be.a('Map');
@@ -430,6 +433,71 @@ describe('Cement - instantiate', function() {
           });
         }
       });
+    });
+  });
+});
+
+describe('Cement - dirname and require', function() {
+  let cement;
+  const dirname = '/foo/bar';
+  before(function() {
+    cement = new Cement(configuration, dirname);
+  });
+  after(function() {
+  });
+
+  it('should have property dirname', function() {
+    expect(cement).to.have.property('dirname', dirname);
+  });
+
+  context('when path argument is a relative path ("./*")', function() {
+    const mockModule = sinon.stub();
+    const mockPath = './mock/path/to/module';
+    const joinPath = nodePath.join(dirname, mockPath);
+    let result;
+    before(function() {
+      mockrequire(joinPath, mockModule);
+      result = cement.require(mockPath);
+    });
+    after(function() {
+      mockrequire.stop(joinPath);
+    });
+    it('should return mockModule', function() {
+      expect(result).to.equal(mockModule);
+    });
+  });
+
+  context('when path argument is a relative path ("../*")', function() {
+    const mockModule = sinon.stub();
+    const mockPath = '../../../mock/path/to/module';
+    const joinPath = nodePath.join(dirname, mockPath);
+    let result;
+    before(function() {
+      mockrequire(joinPath, mockModule);
+      result = cement.require(mockPath);
+    });
+    after(function() {
+      mockrequire.stop(joinPath);
+    });
+    it('should return mockModule', function() {
+      expect(result).to.equal(mockModule);
+    });
+  });
+
+  context('when path argument is not a relative path', function() {
+    const mockModule = sinon.stub();
+    const mockPath = 'mock/path/to/module';
+    // const mockPath = '/mock/path/to/module';
+    let result;
+    before(function() {
+      mockrequire(mockPath, mockModule);
+      result = cement.require(mockPath);
+    });
+    after(function() {
+      mockrequire.stop(mockPath);
+    });
+    it('should return mockModule', function() {
+      expect(result).to.equal(mockModule);
     });
   });
 });
@@ -548,17 +616,17 @@ describe('Cement - publish Context', function() {
         payload: {
           hello: 'world',
         },
-      }).on('accept', function onContextAccept(who) {
-        console.log(`${brick.configuration.name}: ${who} accepted`);
+      }).on('accept', function onContextAccept() {
+        // console.log(`${brick.configuration.name}: ${who} accepted`);
       })
-        .on('reject', function onContextReject(who, reject) {
-          console.log(`${brick.configuration.name}: ${who} rejected with ${reject}`);
+        .on('reject', function onContextReject() {
+          // console.log(`${brick.configuration.name}: ${who} rejected with ${reject}`);
         })
-        .on('done', function onContextReject(who) {
-          console.log(`${brick.configuration.name}: ${who} done`);
+        .on('done', function onContextReject() {
+          // console.log(`${brick.configuration.name}: ${who} done`);
         })
-        .on('error', function onContextReject(who, error) {
-          console.log(`${brick.configuration.name}: ${who} done with error ${error}`);
+        .on('error', function onContextReject() {
+          // console.log(`${brick.configuration.name}: ${who} done with error ${error}`);
         });
       destinations = cement.getDestinations(context.from, context.data);
       spyChannels = [];
