@@ -23,6 +23,21 @@ describe('CementHelper - instantiate', function() {
   });
 });
 
+describe('CementHelper - require', function() {
+  let cementHelper;
+  const mockPath = './mock/path/to/module';
+  before(function() {
+    cementHelper = new CementHelper(cement, 'mybrick1');
+    sinon.stub(cement, 'require').withArgs(mockPath);
+  });
+  after(function() {
+    cement.require.restore();
+  });
+  it('should return cement.require result', function() {
+    expect(cementHelper.require(mockPath)).to.equal(cement.require.returnValues[0]);
+  });
+});
+
 describe('CementHelper - create Context', function() {
   context('without additional events', function() {
     it('should return a Context', function(done) {
