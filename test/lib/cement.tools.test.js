@@ -26,6 +26,7 @@ describe('Cement Tools loader', function() {
       const _config = _.cloneDeep(config);
       delete _config.tools[0].name;
       try {
+        //eslint-disable-next-line no-unused-vars
         const _cement = new Cement(_config, baseDir);
         done('should throw an error');
       } catch (e) {
@@ -38,6 +39,7 @@ describe('Cement Tools loader', function() {
       const _config = _.cloneDeep(config);
       _config.tools.push(_config.tools[0]);
       try {
+        //eslint-disable-next-line no-unused-vars
         const _cement = new Cement(_config, baseDir);
         done('should throw an error');
       } catch (e) {
@@ -50,6 +52,7 @@ describe('Cement Tools loader', function() {
       const _config = _.cloneDeep(config);
       delete _config.tools[0].module;
       try {
+        //eslint-disable-next-line no-unused-vars
         const _cement = new Cement(_config, baseDir);
         done('should throw an error');
       } catch (e) {
@@ -65,6 +68,7 @@ describe('Cement Tools loader', function() {
         module: 'unknown',
       });
       try {
+        //eslint-disable-next-line no-unused-vars
         const _cement = new Cement(_config, baseDir);
         done('should throw an error');
       } catch (e) {
@@ -80,6 +84,7 @@ describe('Cement Tools loader', function() {
         module: './test/lib/cement.tools.testdata/err.js',
       });
       try {
+        //eslint-disable-next-line no-unused-vars
         const _cement = new Cement(_config, baseDir);
         done('should throw an error');
       } catch (e) {

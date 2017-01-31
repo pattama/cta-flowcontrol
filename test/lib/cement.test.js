@@ -38,7 +38,7 @@ describe('Cement - instantiate', function() {
               },
             ],
           });
-        }).to.throw(Error, `missing/incorrect 'name' string property in bricks[0]`);
+        }).to.throw(Error, 'missing/incorrect \'name\' string property in bricks[0]');
       });
     });
 
@@ -61,7 +61,7 @@ describe('Cement - instantiate', function() {
               },
             ],
           });
-        }).to.throw(Error, `bricks[1] name 'foobar' is not unique`);
+        }).to.throw(Error, 'bricks[1] name \'foobar\' is not unique');
       });
     });
 
@@ -76,7 +76,7 @@ describe('Cement - instantiate', function() {
               },
             ],
           });
-        }).to.throw(Error, `missing/incorrect 'module' string property in bricks[0]`);
+        }).to.throw(Error, 'missing/incorrect \'module\' string property in bricks[0]');
       });
     });
 
@@ -93,7 +93,7 @@ describe('Cement - instantiate', function() {
               },
             ],
           });
-        }).to.throw(Error, `incorrect 'properties' object property in bricks[0]`);
+        }).to.throw(Error, 'incorrect \'properties\' object property in bricks[0]');
       });
     });
   });
@@ -112,7 +112,7 @@ describe('Cement - instantiate', function() {
               },
             ],
           });
-        }).to.throw(Error, `incorrect 'publish' Array property in bricks[0]`);
+        }).to.throw(Error, 'incorrect \'publish\' Array property in bricks[0]');
       });
     });
 
@@ -133,7 +133,7 @@ describe('Cement - instantiate', function() {
               },
             ],
           });
-        }).to.throw(Error, `missing/incorrect 'topic' string property in bricks[0].publish[0]`);
+        }).to.throw(Error, 'missing/incorrect \'topic\' string property in bricks[0].publish[0]');
       });
     });
 
@@ -155,7 +155,7 @@ describe('Cement - instantiate', function() {
               },
             ],
           });
-        }).to.throw(Error, `incorrect 'data' Array property in bricks[0].publish[0]`);
+        }).to.throw(Error, 'incorrect \'data\' Array property in bricks[0].publish[0]');
       });
     });
 
@@ -177,7 +177,7 @@ describe('Cement - instantiate', function() {
               },
             ],
           });
-        }).to.throw(Error, `empty 'data' Array property in bricks[0].publish[0]`);
+        }).to.throw(Error, 'empty \'data\' Array property in bricks[0].publish[0]');
       });
     });
 
@@ -203,7 +203,7 @@ describe('Cement - instantiate', function() {
               },
             ],
           });
-        }).to.throw(Error, `publish contract 'some.topic' is declared more than once`);
+        }).to.throw(Error, 'publish contract \'some.topic\' is declared more than once');
       });
     });
   });
@@ -222,7 +222,7 @@ describe('Cement - instantiate', function() {
               },
             ],
           });
-        }).to.throw(Error, `incorrect 'subscribe' Array property in bricks[0]`);
+        }).to.throw(Error, 'incorrect \'subscribe\' Array property in bricks[0]');
       });
     });
 
@@ -243,7 +243,7 @@ describe('Cement - instantiate', function() {
               },
             ],
           });
-        }).to.throw(Error, `missing/incorrect 'topic' string property in bricks[0].subscribe[0]`);
+        }).to.throw(Error, 'missing/incorrect \'topic\' string property in bricks[0].subscribe[0]');
       });
     });
 
@@ -265,7 +265,7 @@ describe('Cement - instantiate', function() {
               },
             ],
           });
-        }).to.throw(Error, `incorrect 'data' Array property in bricks[0].subscribe[0]`);
+        }).to.throw(Error, 'incorrect \'data\' Array property in bricks[0].subscribe[0]');
       });
     });
 
@@ -287,7 +287,7 @@ describe('Cement - instantiate', function() {
               },
             ],
           });
-        }).to.throw(Error, `empty 'data' Array property in bricks[0].subscribe[0]`);
+        }).to.throw(Error, 'empty \'data\' Array property in bricks[0].subscribe[0]');
       });
     });
 
@@ -313,7 +313,7 @@ describe('Cement - instantiate', function() {
               },
             ],
           });
-        }).to.throw(Error, `subscribe contract 'some.topic' is declared more than once`);
+        }).to.throw(Error, 'subscribe contract \'some.topic\' is declared more than once');
       });
     });
   });
@@ -616,17 +616,17 @@ describe('Cement - publish Context', function() {
         payload: {
           hello: 'world',
         },
-      }).on('accept', function onContextAccept(who) {
-        console.log(`${brick.configuration.name}: ${who} accepted`);
+      }).on('accept', function onContextAccept() {
+        // console.log(`${brick.configuration.name}: ${who} accepted`);
       })
-        .on('reject', function onContextReject(who, reject) {
-          console.log(`${brick.configuration.name}: ${who} rejected with ${reject}`);
+        .on('reject', function onContextReject() {
+          // console.log(`${brick.configuration.name}: ${who} rejected with ${reject}`);
         })
-        .on('done', function onContextReject(who) {
-          console.log(`${brick.configuration.name}: ${who} done`);
+        .on('done', function onContextReject() {
+          // console.log(`${brick.configuration.name}: ${who} done`);
         })
-        .on('error', function onContextReject(who, error) {
-          console.log(`${brick.configuration.name}: ${who} done with error ${error}`);
+        .on('error', function onContextReject() {
+          // console.log(`${brick.configuration.name}: ${who} done with error ${error}`);
         });
       destinations = cement.getDestinations(context.from, context.data);
       spyChannels = [];

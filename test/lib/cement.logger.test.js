@@ -57,7 +57,7 @@ describe('logger', () => {
     setTimeout(function() {
       const data = fs.readFileSync(logFile).toString();
       fs.unlinkSync(logFile);
-      console.log('data: ', data);
+      // console.log('data: ', data);
       assert(data.indexOf('TEST') !== -1);
       assert(data.indexOf('CEMENT') !== -1);
       assert(data.indexOf(text) !== -1);
