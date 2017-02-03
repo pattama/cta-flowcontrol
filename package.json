@@ -11,9 +11,10 @@
     "node": "6.9.4"
   },
   "dependencies": {
-    "cta-brick": "git+ssh://git@git.sami.int.thomsonreuters.com:compass/cta-brick.git",
-    "cta-logger": "git+ssh://git@git.sami.int.thomsonreuters.com:compass/cta-logger.git",
-    "cta-common": "git+ssh://git@git.sami.int.thomsonreuters.com:compass/cta-common.git",
+    "cta-tool": "git+ssh://git@git.sami.int.thomsonreuters.com:compass/cta-tool.git#1.0.0",
+    "cta-brick": "git+ssh://git@git.sami.int.thomsonreuters.com:compass/cta-brick.git#1.0.0",
+    "cta-logger": "git+ssh://git@git.sami.int.thomsonreuters.com:compass/cta-logger.git#1.0.0",
+    "cta-common": "git+ssh://git@git.sami.int.thomsonreuters.com:compass/cta-common.git#1.0.0",
     "co": "~4.0.0",
     "es6-promisify": "^3.0.0",
     "lodash": "^4.6.1"
@@ -22,7 +23,6 @@
     "test": "test"
   },
   "devDependencies": {
-    "cta-tool": "git+ssh://git@git.sami.int.thomsonreuters.com:compass/cta-tool.git",
     "chai": "^3.4.0",
     "chai-as-promised": "^5.1.0",
     "eslint": "^3.2.2",
