@@ -184,5 +184,3 @@ Context's **publish()** is equivalent to _CementHelper's **publish(context)**_. 
 ------
 
 ## To Do
-
-* More Points
