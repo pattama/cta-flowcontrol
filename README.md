@@ -23,6 +23,7 @@ We aim to give you brief guidelines here.
 1. [Cement](#1-cement)
 1. [CementHelper](#2-cementhelper)
 1. [Context](#3-context)
+1. [Examples](#4-examples)
 
 ```javascript
 'use strict';
@@ -64,8 +65,8 @@ const config = {
 ```
 
 * __name__ defines the _name_ of **application**
-* __bricks__ provides the _array_ of **bricks**
-* __tools__ provides the _array_ of **tools**
+* __bricks__ provides the _array_ of **bricks**, [see example](#4-1-brick-example)
+* __tools__ provides the _array_ of **tools**, [see example](#4-2-tool-example)
 * __properties__ provides _application_'s **properties**
 
 ```javascript
@@ -128,7 +129,7 @@ class SampleBrick extends Brick {
 ```
 
 CementHelper's **createContext()** provides a functionality to _create **context**_ by providing **data** and **events**.
-* __data__ defines the provided **data** within _context_
+* __data__ defines the provided **data** within _context_, [see example](#4-3-data-as-context-creation-example)
   * __nature__ consists of **type** and **quality**
   * __payload__ contains **anything** as _payload_
 * __events__ provides the _array_ of authorized **events** names that are used via _context_
@@ -178,6 +179,116 @@ class SampleBrick extends Brick {
 ```
 
 Context's **publish()** is equivalent to _CementHelper's **publish(context)**_. It publishes the context.
+
+[back to top](#guidelines)
+
+### 4. Examples
+
+#### 4.1 Brick Example
+
+```javascript
+const brick = {
+  name: 'sample brick',
+  module: './lib/bricks/cta-sample-brick',
+  properties: {},
+  publish: [
+    {
+      topic: 'cta.execution',
+      data: [
+        {
+          nature: {
+            type: 'executions',
+            quality: 'commandLine',
+          },
+        },
+        {
+          nature: {
+            type: 'executions',
+            quality: 'cancel',
+          },
+        },
+      ],
+    },
+    {
+      topic: 'cta.execution.result',
+      data: [
+        {
+          nature: {
+            type: 'results',
+            quality: 'execute',
+          },
+        },
+      ],
+    },
+    {
+      topic: 'cta.execution.state',
+      data: [
+        {
+          nature: {
+            type: 'states',
+            quality: 'create',
+          },
+        },
+      ],
+    },
+  ],
+  subscribe: [
+    {
+      topic: 'cta.execution',
+      data: [
+        {
+          nature: {
+            type: 'executions',
+            quality: 'run',
+          },
+        },
+        {
+          nature: {
+            type: 'executions',
+            quality: 'cancel',
+          },
+        },
+        {
+          nature: {
+            type: 'executions',
+            quality: 'process',
+          },
+        },
+      ],
+    },
+  ],
+};
+```
+
+#### 4.2 Tool Example
+
+```javascript
+const tool = {
+  name: 'logger',
+  module: 'cta-logger',
+  properties: {
+    level: 'verbose',
+  },
+  scope: 'all',
+  order: 1,
+};
+```
+
+#### 4.3 Data as Context Creation Example
+
+```javascript
+const data = {
+  nature: {
+    type: 'executions',
+    quality: 'commandLine',
+  },
+  payload: {
+    executionId: execution.id,
+  },
+};
+
+const otherContext = this.cementHelper.createContext(data, ['operate', 'error']);
+```
 
 [back to top](#guidelines)
 
