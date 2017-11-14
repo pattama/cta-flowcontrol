@@ -65,8 +65,8 @@ const config = {
 ```
 
 * __name__ defines the _name_ of **application**
-* __bricks__ provides the _array_ of **bricks**, [see example](#4-1-brick-example)
-* __tools__ provides the _array_ of **tools**, [see example](#4-2-tool-example)
+* __bricks__ provides the _array_ of **bricks**, [see example](#41-brick-example)
+* __tools__ provides the _array_ of **tools**, [see example](#42-tool-example)
 * __properties__ provides _application_'s **properties**
 
 ```javascript
@@ -129,7 +129,7 @@ class SampleBrick extends Brick {
 ```
 
 CementHelper's **createContext()** provides a functionality to _create **context**_ by providing **data** and **events**.
-* __data__ defines the provided **data** within _context_, [see example](#4-3-data-as-context-creation-example)
+* __data__ defines the provided **data** within _context_, [see example](#43-data-as-context-creation-example)
   * __nature__ consists of **type** and **quality**
   * __payload__ contains **anything** as _payload_
 * __events__ provides the _array_ of authorized **events** names that are used via _context_
