@@ -119,7 +119,7 @@ class SampleBrick extends Brick {
         type: 'type',
         quality: 'quality',
       },
-      payload: { }
+      payload: { },
     };
     
     const otherContext = this.cementHelper.createContext(data, ['operate', 'error']);
@@ -167,7 +167,7 @@ class SampleBrick extends Brick {
         type: 'type',
         quality: 'quality',
       },
-      payload: { }
+      payload: { },
     };
 
     const otherContext = this.cementHelper.createContext(data, ['operate', 'error']);
