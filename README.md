@@ -184,7 +184,7 @@ Context's **publish()** is equivalent to _CementHelper's **publish(context)**_. 
 
 ### 4. Examples
 
-#### 4.1 Brick Example
+#### 4-1 Brick Example
 
 ```javascript
 const brick = {
