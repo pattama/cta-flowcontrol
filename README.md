@@ -33,7 +33,7 @@ const FlowControl = require('cta-flowcontrol');
 
 ### 1. Cement
 
-Cement aims to construct, initialize, and start bricks with tools using Cement's [**_Constructor_**](#1-1-constructor) and [**_Configuration_**](#1-2-configuration).
+Cement aims to construct, initialize, and start bricks with tools using Cement's [**_Constructor_**](#11-constructor) and [**_Configuration_**](#12-configuration).
 
 #### 1.1 Constructor
 ```javascript
