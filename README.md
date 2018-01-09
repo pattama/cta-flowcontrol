@@ -1,4 +1,7 @@
-# cta-flowcontrol [ ![build status](https://git.sami.int.thomsonreuters.com/compass/cta-flowcontrol/badges/master/build.svg)](https://git.sami.int.thomsonreuters.com/compass/cta-flowcontrol/commits/master) [![coverage report](https://git.sami.int.thomsonreuters.com/compass/cta-flowcontrol/badges/master/coverage.svg)](https://git.sami.int.thomsonreuters.com/compass/cta-flowcontrol/commits/master)
+# cta-flowcontrol
+[![Build Status](https://travis-ci.org/thomsonreuters/cta-flowcontrol.svg?branch=master)](https://travis-ci.org/thomsonreuters/cta-flowcontrol)
+[![Coverage Status](https://coveralls.io/repos/github/thomsonreuters/cta-flowcontrol/badge.svg?branch=master)](https://coveralls.io/github/thomsonreuters/cta-flowcontrol?branch=master)
+[![codecov](https://codecov.io/gh/thomsonreuters/cta-flowcontrol/branch/master/graph/badge.svg)](https://codecov.io/gh/thomsonreuters/cta-flowcontrol)
 
 Flow Control Modules for Compass Test Automation, One of Libraries in CTA-OSS Framework
 
